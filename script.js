@@ -34,13 +34,11 @@ const firebaseConfig = {
   appId: "1:24575054302:web:678ee8ede9ebbab0558d4f"
 };
 
-// تهيئة الخدمة
 let app, auth, db;
 try {
     app = initializeApp(firebaseConfig);
     auth = getAuth(app);
     db = getFirestore(app);
-    console.log("تم الاتصال بـ Firebase بنجاح!");
 } catch (error) {
     console.error("خطأ في تهيئة Firebase:", error);
 }
@@ -48,9 +46,26 @@ try {
 let currentTeacherUser = null;
 
 // =========================================================
-// 3. التنقل بين التبويبات والصفحات
+// 3. إدارة الوضع الليلي والتنقل بين التبويبات
 // =========================================================
 document.addEventListener('DOMContentLoaded', () => {
+    // --- برمجة الوضع الليلي (Dark Mode) ---
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+    const savedTheme = localStorage.getItem('theme');
+
+    if (savedTheme === 'dark') {
+        document.body.classList.add('dark-mode');
+        themeToggleBtn.textContent = '☀️';
+    }
+
+    themeToggleBtn?.addEventListener('click', () => {
+        document.body.classList.toggle('dark-mode');
+        const isDark = document.body.classList.contains('dark-mode');
+        themeToggleBtn.textContent = isDark ? '☀️' : '🌙';
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    });
+
+    // --- التنقل بين التبويبات ---
     const btnStudentTab = document.getElementById('btnStudentTab');
     const btnTeacherTab = document.getElementById('btnTeacherTab');
     const studentView = document.getElementById('studentView');
@@ -117,7 +132,7 @@ if (auth) {
                     document.getElementById('welcomeTeacherText').textContent = `مرحباً بك، ${teacherDoc.data().fullName}`;
                 }
             } catch (err) {
-                console.log("تعذر جلب اسم المعلم الإضافي.");
+                console.log("تعذر جلب بيانات المعلم.");
             }
 
             if (btnTeacherTab.classList.contains('active')) {
@@ -136,7 +151,7 @@ if (auth) {
 }
 
 // =========================================================
-// 5. استعلام الطالب عن جميع مواده
+// 5. استعلام الطالب عن النتيجة (عُدّلت لتظهر بصف واحد مع المجموع والتقدير)
 // =========================================================
 document.getElementById('studentSearchForm')?.addEventListener('submit', async function(e) {
     e.preventDefault();
@@ -152,29 +167,95 @@ document.getElementById('studentSearchForm')?.addEventListener('submit', async f
         const querySnapshot = await getDocs(q);
 
         if (!querySnapshot.empty) {
-            let htmlContent = '';
-            querySnapshot.forEach((docSnap) => {
-                const student = docSnap.data();
-                const isPass = student.status === 'ناجح';
-                const statusClass = isPass ? 'pass' : 'fail';
-                const badgeClass = isPass ? 'badge-pass' : 'badge-fail';
+            let studentName = '';
+            let subjectsMap = {};
+            let totalScore = 0;
+            let count = 0;
+            let isAllPassed = true;
 
-                htmlContent += `
-                    <div class="result-box ${statusClass}" style="margin-top:10px;">
-                        <div class="result-header">
-                            <div class="student-name" style="font-weight:bold;">${student.studentName}</div>
-                            <span class="badge ${badgeClass}">${student.status}</span>
-                        </div>
-                        <div class="result-grid">
-                            <div class="result-item"><span>رقم الجلوس</span><strong>${student.seatNumber}</strong></div>
-                            <div class="result-item"><span>المادة</span><strong>${student.subject}</strong></div>
-                            <div class="result-item"><span>الدرجة</span><strong>${student.score} / 100</strong></div>
-                            <div class="result-item"><span>التقدير</span><strong>${student.grade}</strong></div>
-                        </div>
-                    </div>
-                `;
+            querySnapshot.forEach((docSnap) => {
+                const data = docSnap.data();
+                studentName = data.studentName;
+                subjectsMap[data.subject] = data.score;
+                totalScore += Number(data.score);
+                count++;
+                if (data.status === 'راسب' || Number(data.score) < 50) {
+                    isAllPassed = false;
+                }
             });
-            resultBox.innerHTML = htmlContent;
+
+            const maxScore = count * 100;
+            const percentage = (totalScore / maxScore) * 100;
+            
+            // حساب التقدير العام للطالب
+            let overallGrade = '';
+            if (!isAllPassed || percentage < 50) {
+                overallGrade = 'راسب (F)';
+            } else if (percentage >= 90) {
+                overallGrade = 'ممتاز (A)';
+            } else if (percentage >= 80) {
+                overallGrade = 'جيد جداً (B)';
+            } else if (percentage >= 70) {
+                overallGrade = 'جيد (C)';
+            } else {
+                overallGrade = 'مقبول (D)';
+            }
+
+            const finalStatus = (isAllPassed && percentage >= 50) ? 'ناجح' : 'راسب';
+            const statusClass = finalStatus === 'ناجح' ? 'pass' : 'fail';
+            const badgeClass = finalStatus === 'ناجح' ? 'badge-pass' : 'badge-fail';
+
+            // تجميع درجات المواد في صف واحد
+            let tableHeaders = '';
+            let tableRows = '';
+
+            for (const [subject, score] of Object.entries(subjectsMap)) {
+                tableHeaders += `<th style="text-align:center;">${subject}</th>`;
+                tableRows += `<td style="text-align:center;"><strong>${score}</strong></td>`;
+            }
+
+            // إضافة خانة المجموع الكلي ضمن أعمدة الجدول
+            tableHeaders += `<th style="text-align:center; background:var(--primary-light);">المجموع الكلي</th>`;
+            tableRows += `<td style="text-align:center; font-weight:bold; color:var(--primary); background:var(--primary-light);">${totalScore} / ${maxScore}</td>`;
+
+            resultBox.className = `result-box ${statusClass}`;
+            resultBox.innerHTML = `
+                <div style="margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px; display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                        <h3 style="margin-bottom: 4px;">نتيجة الطالب: ${studentName}</h3>
+                        <span style="color: var(--text-muted); font-size: 14px;">رقم الجلوس: <strong>${seatNo}</strong></span>
+                    </div>
+                    <span class="badge ${badgeClass}" style="font-size: 15px; padding: 8px 16px;">${finalStatus}</span>
+                </div>
+
+                <!-- جدول الدرجات في صف واحد -->
+                <div class="table-responsive" style="margin-bottom: 20px;">
+                    <table>
+                        <thead>
+                            <tr>${tableHeaders}</tr>
+                        </thead>
+                        <tbody>
+                            <tr>${tableRows}</tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- أسفل الجدول: المجموع الكلي + تقدير الطالب + الحالة العامة -->
+                <div class="result-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); text-align: center;">
+                    <div class="result-item">
+                        <span>المجموع الكلي</span>
+                        <strong style="font-size: 18px; color: var(--primary);">${totalScore} من ${maxScore} (${percentage.toFixed(1)}%)</strong>
+                    </div>
+                    <div class="result-item">
+                        <span>تقدير الطالب العام</span>
+                        <strong style="font-size: 18px;">${overallGrade}</strong>
+                    </div>
+                    <div class="result-item">
+                        <span>النتيجة النهائية</span>
+                        <strong style="font-size: 18px; color: ${finalStatus === 'ناجح' ? 'var(--success)' : 'var(--danger)'};">${finalStatus}</strong>
+                    </div>
+                </div>
+            `;
         } else {
             resultBox.className = 'result-box fail';
             resultBox.innerHTML = `<div style="text-align: center; color: var(--danger); font-weight: 700;">عذراً، لم يتم العثور على نتائج برقم الجلوس: (${seatNo})</div>`;
@@ -200,13 +281,13 @@ document.getElementById('loginForm')?.addEventListener('submit', async function(
         this.reset();
         errorMsg.classList.add('hidden');
     } catch (error) {
-        errorMsg.textContent = "بيانات الدخول غير صحيحة، أو لم يفعّل حسابك بعد.";
+        errorMsg.textContent = "بيانات الدخول غير صحيحة، أو لم يفعل الحساب بعد.";
         errorMsg.classList.remove('hidden');
     }
 });
 
 // =========================================================
-// 7. إنشاء حساب معلم معتمد بكود فريد
+// 7. إنشاء حساب معلم بكود اعتماد
 // =========================================================
 document.getElementById('registerForm')?.addEventListener('submit', async function(e) {
     e.preventDefault();
@@ -219,7 +300,6 @@ document.getElementById('registerForm')?.addEventListener('submit', async functi
     errorMsg.classList.add('hidden');
 
     try {
-        // التحقق من وجود الكود وصلاحيته
         const codeRef = doc(db, "approved_teacher_codes", teacherCode);
         const codeSnap = await getDoc(codeRef);
 
@@ -229,11 +309,9 @@ document.getElementById('registerForm')?.addEventListener('submit', async functi
             return;
         }
 
-        // إنشاء المستخدم في Authentication
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
-        // حفظ بيانات المعلم في Firestore
         await setDoc(doc(db, "teachers", user.uid), {
             uid: user.uid,
             fullName: fullName,
@@ -242,7 +320,6 @@ document.getElementById('registerForm')?.addEventListener('submit', async functi
             createdAt: new Date()
         });
 
-        // تحويل حالة الكود إلى مستخدم
         await setDoc(codeRef, { isUsed: true, usedBy: user.uid }, { merge: true });
 
         alert("تم إنشاء حساب المعلم بنجاح!");
@@ -256,7 +333,7 @@ document.getElementById('registerForm')?.addEventListener('submit', async functi
 });
 
 // =========================================================
-// 8. إضافة درجات المواد المدمجة دفعة واحدة
+// 8. حفظ الدرجات المدمجة دفعة واحدة
 // =========================================================
 document.getElementById('addGradeForm')?.addEventListener('submit', async function(e) {
     e.preventDefault();
@@ -297,16 +374,15 @@ document.getElementById('addGradeForm')?.addEventListener('submit', async functi
 
     try {
         await Promise.all(savePromises);
-        alert('تم حفظ كافة الدرجات المحددة بنجاح!');
+        alert('تم حفظ جميع الدرجات بنجاح!');
         this.reset();
         loadTeacherGrades();
     } catch (error) {
         console.error("خطأ الحفظ:", error);
-        alert("حدث خطأ أثناء الاتصال بقاعدة البيانات لعملية الحفظ!");
+        alert("حدث خطأ أثناء الحفظ!");
     }
 });
 
-// حساب التقديرات تلقائياً
 function getEvaluation(score) {
     if (score >= 90) return { grade: 'ممتاز (A)', status: 'ناجح' };
     if (score >= 80) return { grade: 'جيد جداً (B)', status: 'ناجح' };
@@ -346,12 +422,11 @@ async function loadTeacherGrades() {
                 <td>${item.score}</td>
                 <td>${item.grade}</td>
                 <td><span class="badge ${isPass ? 'badge-pass' : 'badge-fail'}">${item.status}</span></td>
-                <td><button class="btn btn-danger delete-btn" data-id="${docId}">حذف</button></td>
+                <td><button class="btn btn-danger delete-btn" data-id="${docId}" style="padding: 6px 12px; font-size: 12px;">حذف</button></td>
             `;
             tbody.appendChild(tr);
         });
 
-        // تفعيل زر الحذف لكل مادة
         document.querySelectorAll('.delete-btn').forEach(btn => {
             btn.addEventListener('click', async function() {
                 const id = this.getAttribute('data-id');
@@ -367,7 +442,6 @@ async function loadTeacherGrades() {
     }
 }
 
-// تسجيل الخروج
 document.getElementById('logoutBtn')?.addEventListener('click', () => {
     if (auth) signOut(auth);
 });
