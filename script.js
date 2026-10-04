@@ -12,7 +12,6 @@ import {
 import { 
     getFirestore, 
     collection, 
-    addDoc, 
     getDocs, 
     doc, 
     getDoc, 
@@ -23,7 +22,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 // =========================================================
-// 2. إعدادات Firebase الخاصة بالمشروع
+// 2. إعدادات Firebase
 // =========================================================
 const firebaseConfig = {
   apiKey: "AIzaSyA4YOFdX_LT4G1YO3MBu2Odf312657g4C4",
@@ -46,16 +45,15 @@ try {
 let currentTeacherUser = null;
 
 // =========================================================
-// 3. إدارة الوضع الليلي والتنقل بين التبويبات
+// 3. إدارة الوضع الليلي والتنقل
 // =========================================================
 document.addEventListener('DOMContentLoaded', () => {
-    // --- برمجة الوضع الليلي (Dark Mode) ---
     const themeToggleBtn = document.getElementById('themeToggleBtn');
     const savedTheme = localStorage.getItem('theme');
 
     if (savedTheme === 'dark') {
         document.body.classList.add('dark-mode');
-        themeToggleBtn.textContent = '☀️';
+        if (themeToggleBtn) themeToggleBtn.textContent = '☀️';
     }
 
     themeToggleBtn?.addEventListener('click', () => {
@@ -65,7 +63,6 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('theme', isDark ? 'dark' : 'light');
     });
 
-    // --- التنقل بين التبويبات ---
     const btnStudentTab = document.getElementById('btnStudentTab');
     const btnTeacherTab = document.getElementById('btnTeacherTab');
     const studentView = document.getElementById('studentView');
@@ -116,7 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // =========================================================
-// 4. مراقبة حالة تسجيل الدخول (Auth Observer)
+// 4. مراقبة تسجيل الدخول
 // =========================================================
 if (auth) {
     onAuthStateChanged(auth, async (user) => {
@@ -151,7 +148,7 @@ if (auth) {
 }
 
 // =========================================================
-// 5. استعلام الطالب عن النتيجة (عُدّلت لتظهر بصف واحد مع المجموع والتقدير)
+// 5. استعلام الطالب عن النتيجة
 // =========================================================
 document.getElementById('studentSearchForm')?.addEventListener('submit', async function(e) {
     e.preventDefault();
@@ -163,72 +160,36 @@ document.getElementById('studentSearchForm')?.addEventListener('submit', async f
     resultBox.classList.remove('hidden');
 
     try {
-        const q = query(collection(db, "grades"), where("seatNumber", "==", seatNo));
-        const querySnapshot = await getDocs(q);
+        const studentDocRef = doc(db, "grades", seatNo);
+        const studentSnap = await getDoc(studentDocRef);
 
-        if (!querySnapshot.empty) {
-            let studentName = '';
-            let subjectsMap = {};
-            let totalScore = 0;
-            let count = 0;
-            let isAllPassed = true;
+        if (studentSnap.exists()) {
+            const student = studentSnap.data();
+            const isPass = student.status === 'ناجح';
+            const statusClass = isPass ? 'pass' : 'fail';
+            const badgeClass = isPass ? 'badge-pass' : 'badge-fail';
 
-            querySnapshot.forEach((docSnap) => {
-                const data = docSnap.data();
-                studentName = data.studentName;
-                subjectsMap[data.subject] = data.score;
-                totalScore += Number(data.score);
-                count++;
-                if (data.status === 'راسب' || Number(data.score) < 50) {
-                    isAllPassed = false;
-                }
-            });
-
-            const maxScore = count * 100;
-            const percentage = (totalScore / maxScore) * 100;
-            
-            // حساب التقدير العام للطالب
-            let overallGrade = '';
-            if (!isAllPassed || percentage < 50) {
-                overallGrade = 'راسب (F)';
-            } else if (percentage >= 90) {
-                overallGrade = 'ممتاز (A)';
-            } else if (percentage >= 80) {
-                overallGrade = 'جيد جداً (B)';
-            } else if (percentage >= 70) {
-                overallGrade = 'جيد (C)';
-            } else {
-                overallGrade = 'مقبول (D)';
-            }
-
-            const finalStatus = (isAllPassed && percentage >= 50) ? 'ناجح' : 'راسب';
-            const statusClass = finalStatus === 'ناجح' ? 'pass' : 'fail';
-            const badgeClass = finalStatus === 'ناجح' ? 'badge-pass' : 'badge-fail';
-
-            // تجميع درجات المواد في صف واحد
             let tableHeaders = '';
             let tableRows = '';
 
-            for (const [subject, score] of Object.entries(subjectsMap)) {
+            for (const [subject, score] of Object.entries(student.subjects)) {
                 tableHeaders += `<th style="text-align:center;">${subject}</th>`;
                 tableRows += `<td style="text-align:center;"><strong>${score}</strong></td>`;
             }
 
-            // إضافة خانة المجموع الكلي ضمن أعمدة الجدول
             tableHeaders += `<th style="text-align:center; background:var(--primary-light);">المجموع الكلي</th>`;
-            tableRows += `<td style="text-align:center; font-weight:bold; color:var(--primary); background:var(--primary-light);">${totalScore} / ${maxScore}</td>`;
+            tableRows += `<td style="text-align:center; font-weight:bold; color:var(--primary); background:var(--primary-light);">${student.totalScore} / ${student.maxScore}</td>`;
 
             resultBox.className = `result-box ${statusClass}`;
             resultBox.innerHTML = `
                 <div style="margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px; display:flex; justify-content:space-between; align-items:center;">
                     <div>
-                        <h3 style="margin-bottom: 4px;">نتيجة الطالب: ${studentName}</h3>
-                        <span style="color: var(--text-muted); font-size: 14px;">رقم الجلوس: <strong>${seatNo}</strong></span>
+                        <h3 style="margin-bottom: 4px;">نتيجة الطالب: ${student.studentName}</h3>
+                        <span style="color: var(--text-muted); font-size: 14px;">رقم الجلوس: <strong>${student.seatNumber}</strong></span>
                     </div>
-                    <span class="badge ${badgeClass}" style="font-size: 15px; padding: 8px 16px;">${finalStatus}</span>
+                    <span class="badge ${badgeClass}" style="font-size: 15px; padding: 8px 16px;">${student.status}</span>
                 </div>
 
-                <!-- جدول الدرجات في صف واحد -->
                 <div class="table-responsive" style="margin-bottom: 20px;">
                     <table>
                         <thead>
@@ -240,19 +201,18 @@ document.getElementById('studentSearchForm')?.addEventListener('submit', async f
                     </table>
                 </div>
 
-                <!-- أسفل الجدول: المجموع الكلي + تقدير الطالب + الحالة العامة -->
                 <div class="result-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); text-align: center;">
                     <div class="result-item">
                         <span>المجموع الكلي</span>
-                        <strong style="font-size: 18px; color: var(--primary);">${totalScore} من ${maxScore} (${percentage.toFixed(1)}%)</strong>
+                        <strong style="font-size: 18px; color: var(--primary);">${student.totalScore} من ${student.maxScore} (${student.percentage.toFixed(1)}%)</strong>
                     </div>
                     <div class="result-item">
                         <span>تقدير الطالب العام</span>
-                        <strong style="font-size: 18px;">${overallGrade}</strong>
+                        <strong style="font-size: 18px;">${student.overallGrade}</strong>
                     </div>
                     <div class="result-item">
                         <span>النتيجة النهائية</span>
-                        <strong style="font-size: 18px; color: ${finalStatus === 'ناجح' ? 'var(--success)' : 'var(--danger)'};">${finalStatus}</strong>
+                        <strong style="font-size: 18px; color: ${isPass ? 'var(--success)' : 'var(--danger)'};">${student.status}</strong>
                     </div>
                 </div>
             `;
@@ -287,7 +247,7 @@ document.getElementById('loginForm')?.addEventListener('submit', async function(
 });
 
 // =========================================================
-// 7. إنشاء حساب معلم بكود اعتماد
+// 7. إنشاء حساب معلم
 // =========================================================
 document.getElementById('registerForm')?.addEventListener('submit', async function(e) {
     e.preventDefault();
@@ -333,7 +293,7 @@ document.getElementById('registerForm')?.addEventListener('submit', async functi
 });
 
 // =========================================================
-// 8. حفظ الدرجات المدمجة دفعة واحدة
+// 8. حفظ سجل الطالب منفصلاً بوثيقة خاصة برقم الجلوس
 // =========================================================
 document.getElementById('addGradeForm')?.addEventListener('submit', async function(e) {
     e.preventDefault();
@@ -343,56 +303,74 @@ document.getElementById('addGradeForm')?.addEventListener('submit', async functi
     const studentName = document.getElementById('studentName').value.trim();
     const subjectInputs = document.querySelectorAll('.subject-input');
 
-    let hasAtLeastOneScore = false;
-    const savePromises = [];
+    let subjects = {};
+    let totalScore = 0;
+    let count = 0;
+    let isAllPassed = true;
 
     subjectInputs.forEach(input => {
         const scoreVal = input.value.trim();
         if (scoreVal !== '') {
-            hasAtLeastOneScore = true;
             const score = parseFloat(scoreVal);
             const subjectName = input.getAttribute('data-subject');
-            const evalData = getEvaluation(score);
-
-            savePromises.push(addDoc(collection(db, "grades"), {
-                seatNumber,
-                studentName,
-                subject: subjectName,
-                score,
-                grade: evalData.grade,
-                status: evalData.status,
-                teacherUid: currentTeacherUser.uid,
-                createdAt: new Date()
-            }));
+            subjects[subjectName] = score;
+            totalScore += score;
+            count++;
+            if (score < 50) {
+                isAllPassed = false;
+            }
         }
     });
 
-    if (!hasAtLeastOneScore) {
+    if (count === 0) {
         alert('يرجى إدخال درجة مادة واحدة على الأقل!');
         return;
     }
 
+    const maxScore = count * 100;
+    const percentage = (totalScore / maxScore) * 100;
+
+    let overallGrade = '';
+    if (!isAllPassed || percentage < 50) {
+        overallGrade = 'راسب (F)';
+    } else if (percentage >= 90) {
+        overallGrade = 'ممتاز (A)';
+    } else if (percentage >= 80) {
+        overallGrade = 'جيد جداً (B)';
+    } else if (percentage >= 70) {
+        overallGrade = 'جيد (C)';
+    } else {
+        overallGrade = 'مقبول (D)';
+    }
+
+    const status = (isAllPassed && percentage >= 50) ? 'ناجح' : 'راسب';
+
     try {
-        await Promise.all(savePromises);
-        alert('تم حفظ جميع الدرجات بنجاح!');
+        // حفظ ملف الطالب معزول برقم جلوسه مع تحديثه عند إعادة الإدخال
+        await setDoc(doc(db, "grades", seatNumber), {
+            seatNumber,
+            studentName,
+            subjects,
+            totalScore,
+            maxScore,
+            percentage,
+            overallGrade,
+            status,
+            teacherUid: currentTeacherUser.uid,
+            updatedAt: new Date()
+        });
+
+        alert(`تم حفظ نتيجة الطالب (${studentName}) بنجاح!`);
         this.reset();
         loadTeacherGrades();
     } catch (error) {
         console.error("خطأ الحفظ:", error);
-        alert("حدث خطأ أثناء الحفظ!");
+        alert("حدث خطأ أثناء حفظ بيانات الطالب!");
     }
 });
 
-function getEvaluation(score) {
-    if (score >= 90) return { grade: 'ممتاز (A)', status: 'ناجح' };
-    if (score >= 80) return { grade: 'جيد جداً (B)', status: 'ناجح' };
-    if (score >= 70) return { grade: 'جيد (C)', status: 'ناجح' };
-    if (score >= 60) return { grade: 'مقبول (D)', status: 'ناجح' };
-    return { grade: 'راسب (F)', status: 'راسب' };
-}
-
 // =========================================================
-// 9. عرض وسجل درجات المعلم الحالي
+// 9. عرض قائمة الطلاب المعزولة في لوحة تحكم المعلم
 // =========================================================
 async function loadTeacherGrades() {
     if (!currentTeacherUser || !db) return;
@@ -405,24 +383,29 @@ async function loadTeacherGrades() {
 
         tbody.innerHTML = '';
         if (querySnapshot.empty) {
-            tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">لا توجد درجات مضافة حتى الآن</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">لا يوجد طلاب مضافون حتى الآن</td></tr>';
             return;
         }
 
         querySnapshot.forEach((docSnap) => {
-            const item = docSnap.data();
+            const student = docSnap.data();
             const docId = docSnap.id;
             const tr = document.createElement('tr');
-            const isPass = item.status === 'ناجح';
+            const isPass = student.status === 'ناجح';
+
+            // تجميع درجات مواد هذا الطالب للعرض بشكل مختصر وأنيق
+            let subjectsSummary = Object.entries(student.subjects)
+                .map(([subj, score]) => `${subj}: <strong>${score}</strong>`)
+                .join(' | ');
 
             tr.innerHTML = `
-                <td><strong>${item.seatNumber}</strong></td>
-                <td>${item.studentName}</td>
-                <td>${item.subject}</td>
-                <td>${item.score}</td>
-                <td>${item.grade}</td>
-                <td><span class="badge ${isPass ? 'badge-pass' : 'badge-fail'}">${item.status}</span></td>
-                <td><button class="btn btn-danger delete-btn" data-id="${docId}" style="padding: 6px 12px; font-size: 12px;">حذف</button></td>
+                <td><strong>${student.seatNumber}</strong></td>
+                <td><strong>${student.studentName}</strong></td>
+                <td style="font-size:13px; color: var(--text-muted);">${subjectsSummary}</td>
+                <td><strong style="color:var(--primary);">${student.totalScore} / ${student.maxScore}</strong></td>
+                <td>${student.overallGrade}</td>
+                <td><span class="badge ${isPass ? 'badge-pass' : 'badge-fail'}">${student.status}</span></td>
+                <td><button class="btn btn-danger delete-btn" data-id="${docId}" style="padding: 6px 12px; font-size: 12px;">حذف الطالب</button></td>
             `;
             tbody.appendChild(tr);
         });
@@ -430,7 +413,7 @@ async function loadTeacherGrades() {
         document.querySelectorAll('.delete-btn').forEach(btn => {
             btn.addEventListener('click', async function() {
                 const id = this.getAttribute('data-id');
-                if (confirm('هل أنت تأكد من حذف هذه المادة؟')) {
+                if (confirm(`هل أنت تأكد من حذف سجل الطالب رقم الجلوس: (${id})؟`)) {
                     await deleteDoc(doc(db, "grades", id));
                     loadTeacherGrades();
                 }
