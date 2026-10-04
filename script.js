@@ -22,7 +22,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 // =========================================================
-// 2. إعدادات Firebase
+// 2. إعدادات Firebase الخاصة بالمشروع
 // =========================================================
 const firebaseConfig = {
   apiKey: "AIzaSyA4YOFdX_LT4G1YO3MBu2Odf312657g4C4",
@@ -45,7 +45,7 @@ try {
 let currentTeacherUser = null;
 
 // =========================================================
-// 3. إدارة الوضع الليلي والتنقل
+// 3. إدارة الوضع الليلي والتبويبات
 // =========================================================
 document.addEventListener('DOMContentLoaded', () => {
     const themeToggleBtn = document.getElementById('themeToggleBtn');
@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
     themeToggleBtn?.addEventListener('click', () => {
         document.body.classList.toggle('dark-mode');
         const isDark = document.body.classList.contains('dark-mode');
-        themeToggleBtn.textContent = isDark ? '☀️' : '🌙';
+        themeToggleBtn.textContent = isDark ? '☀️️' : '🌙';
         localStorage.setItem('theme', isDark ? 'dark' : 'light');
     });
 
@@ -113,7 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // =========================================================
-// 4. مراقبة تسجيل الدخول
+// 4. مراقبة حالة تسجيل الدخول
 // =========================================================
 if (auth) {
     onAuthStateChanged(auth, async (user) => {
@@ -148,7 +148,7 @@ if (auth) {
 }
 
 // =========================================================
-// 5. استعلام الطالب عن النتيجة
+// 5. استعلام الطالب عن النتيجة (عرض أفقي بصف واحد)
 // =========================================================
 document.getElementById('studentSearchForm')?.addEventListener('submit', async function(e) {
     e.preventDefault();
@@ -173,12 +173,12 @@ document.getElementById('studentSearchForm')?.addEventListener('submit', async f
             let tableRows = '';
 
             for (const [subject, score] of Object.entries(student.subjects)) {
-                tableHeaders += `<th style="text-align:center;">${subject}</th>`;
-                tableRows += `<td style="text-align:center;"><strong>${score}</strong></td>`;
+                tableHeaders += `<th>${subject}</th>`;
+                tableRows += `<td><strong>${score}</strong></td>`;
             }
 
-            tableHeaders += `<th style="text-align:center; background:var(--primary-light);">المجموع الكلي</th>`;
-            tableRows += `<td style="text-align:center; font-weight:bold; color:var(--primary); background:var(--primary-light);">${student.totalScore} / ${student.maxScore}</td>`;
+            tableHeaders += `<th style="background:var(--primary-light);">المجموع الكلي</th>`;
+            tableRows += `<td style="font-weight:bold; color:var(--primary); background:var(--primary-light);">${student.totalScore} / ${student.maxScore}</td>`;
 
             resultBox.className = `result-box ${statusClass}`;
             resultBox.innerHTML = `
@@ -247,7 +247,7 @@ document.getElementById('loginForm')?.addEventListener('submit', async function(
 });
 
 // =========================================================
-// 7. إنشاء حساب معلم
+// 7. إنشاء حساب معلم بكود اعتماد
 // =========================================================
 document.getElementById('registerForm')?.addEventListener('submit', async function(e) {
     e.preventDefault();
@@ -293,7 +293,7 @@ document.getElementById('registerForm')?.addEventListener('submit', async functi
 });
 
 // =========================================================
-// 8. حفظ سجل الطالب منفصلاً بوثيقة خاصة برقم الجلوس
+// 8. حفظ سجل الطالب منفصلاً برقم الجلوس
 // =========================================================
 document.getElementById('addGradeForm')?.addEventListener('submit', async function(e) {
     e.preventDefault();
@@ -346,7 +346,6 @@ document.getElementById('addGradeForm')?.addEventListener('submit', async functi
     const status = (isAllPassed && percentage >= 50) ? 'ناجح' : 'راسب';
 
     try {
-        // حفظ ملف الطالب معزول برقم جلوسه مع تحديثه عند إعادة الإدخال
         await setDoc(doc(db, "grades", seatNumber), {
             seatNumber,
             studentName,
@@ -370,7 +369,7 @@ document.getElementById('addGradeForm')?.addEventListener('submit', async functi
 });
 
 // =========================================================
-// 9. عرض قائمة الطلاب المعزولة في لوحة تحكم المعلم
+// 9. عرض قائمة الطلاب المعزولة في لوحة المعلم
 // =========================================================
 async function loadTeacherGrades() {
     if (!currentTeacherUser || !db) return;
@@ -393,7 +392,6 @@ async function loadTeacherGrades() {
             const tr = document.createElement('tr');
             const isPass = student.status === 'ناجح';
 
-            // تجميع درجات مواد هذا الطالب للعرض بشكل مختصر وأنيق
             let subjectsSummary = Object.entries(student.subjects)
                 .map(([subj, score]) => `${subj}: <strong>${score}</strong>`)
                 .join(' | ');
