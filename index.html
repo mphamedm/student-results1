@@ -1,1 +1,371 @@
-<h1>mohsen moustafa rashed </h1>
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام تسجيل نتائج الطلاب</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #3498db;
+            --success-color: #2ecc71;
+            --danger-color: #e74c3c;
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: #333;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        header h1 {
+            color: var(--primary-color);
+            font-size: 26px;
+            margin-bottom: 5px;
+        }
+
+        header p {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        .form-card {
+            background: #fdfdfd;
+            padding: 20px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        .form-card h2 {
+            font-size: 18px;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .grid-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: 600;
+            margin-bottom: 6px;
+            font-size: 14px;
+            color: #4a5568;
+        }
+
+        input {
+            padding: 10px 12px;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus {
+            border-color: var(--accent-color);
+        }
+
+        .btn-submit {
+            grid-column: 1 / -1;
+            background-color: var(--accent-color);
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-top: 5px;
+        }
+
+        .btn-submit:hover {
+            background-color: #2980b9;
+        }
+
+        .table-header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .table-header-section h2 {
+            font-size: 18px;
+            color: var(--primary-color);
+        }
+
+        .search-input {
+            width: 250px;
+            padding: 8px 12px;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: right;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th {
+            background-color: #edf2f7;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background-color: #f7fafc;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .badge-pass {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .badge-fail {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .btn-delete {
+            background-color: #fff;
+            border: 1px solid var(--danger-color);
+            color: var(--danger-color);
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .btn-delete:hover {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #a0aec0;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>نظام تسجيل نتائج الطلاب</h1>
+        <p>إدارة وتسجيل نتائج الطلاب وسجل الدرجات</p>
+    </header>
+
+    <!-- نموذج الإدخال -->
+    <div class="form-card">
+        <h2>تسجيل نتيجة جديدة</h2>
+        <form id="gradeForm" class="grid-form">
+            <div class="form-group">
+                <label for="studentName">اسم الطالب</label>
+                <input type="text" id="studentName" required placeholder="أدخل اسم الطالب">
+            </div>
+
+            <div class="form-group">
+                <label for="studentId">الرقم الأكاديمي</label>
+                <input type="text" id="studentId" required placeholder="مثال: 1001">
+            </div>
+
+            <div class="form-group">
+                <label for="subjectName">المادة الدراسية</label>
+                <input type="text" id="subjectName" required placeholder="مثال: الرياضيات">
+            </div>
+
+            <div class="form-group">
+                <label for="score">الدرجة (من 100)</label>
+                <input type="number" id="score" min="0" max="100" required placeholder="أدخل الدرجة">
+            </div>
+
+            <button type="submit" class="btn-submit">إضافة النتيجة</button>
+        </form>
+    </div>
+
+    <!-- عرض النتائج -->
+    <div class="table-header-section">
+        <h2>سجل النتائج</h2>
+        <input type="text" id="searchInput" class="search-input" placeholder="بحث باسم الطالب أو الرقم...">
+    </div>
+
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>الرقم الأكاديمي</th>
+                    <th>اسم الطالب</th>
+                    <th>المادة</th>
+                    <th>الدرجة</th>
+                    <th>التقدير</th>
+                    <th>الحالة</th>
+                    <th>إجراءات</th>
+                </tr>
+            </thead>
+            <tbody id="resultsTableBody">
+                <!-- سيتم إضافة البيانات هنا ديناميكياً -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    // العناصر الرئيسية
+    const form = document.getElementById('gradeForm');
+    const tableBody = document.getElementById('resultsTableBody');
+    const searchInput = document.getElementById('searchInput');
+
+    // جلب البيانات المخزنة سابقاً من LocalStorage
+    let results = JSON.parse(localStorage.getItem('student_results_data')) || [];
+
+    // عرض البيانات عند تحميل الصفحة
+    document.addEventListener('DOMContentLoaded', renderTable);
+
+    // إضافة نتيجة جديدة
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const name = document.getElementById('studentName').value.trim();
+        const id = document.getElementById('studentId').value.trim();
+        const subject = document.getElementById('subjectName').value.trim();
+        const score = parseFloat(document.getElementById('score').value);
+
+        const evaluation = getEvaluation(score);
+
+        const newEntry = {
+            id: id,
+            name: name,
+            subject: subject,
+            score: score,
+            grade: evaluation.grade,
+            status: evaluation.status
+        };
+
+        results.push(newEntry);
+        saveData();
+        renderTable();
+        form.reset();
+    });
+
+    // حساب التقدير والحالة
+    function getEvaluation(score) {
+        if (score >= 90) return { grade: 'ممتاز (A)', status: 'ناجح' };
+        if (score >= 80) return { grade: 'جيد جداً (B)', status: 'ناجح' };
+        if (score >= 70) return { grade: 'جيد (C)', status: 'ناجح' };
+        if (score >= 60) return { grade: 'مقبول (D)', status: 'ناجح' };
+        return { grade: 'راسب (F)', status: 'راسب' };
+    }
+
+    // حفظ البيانات في LocalStorage
+    function saveData() {
+        localStorage.setItem('student_results_data', JSON.stringify(results));
+    }
+
+    // عرض النتائج في الجدول
+    function renderTable(dataToRender = results) {
+        tableBody.innerHTML = '';
+
+        if (dataToRender.length === 0) {
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="7" class="empty-state">لا توجد نتائج مسجلة حتى الآن</td>
+                </tr>
+            `;
+            return;
+        }
+
+        dataToRender.forEach((item, index) => {
+            const tr = document.createElement('tr');
+            const badgeClass = item.status === 'ناجح' ? 'badge-pass' : 'badge-fail';
+
+            tr.innerHTML = `
+                <td>${item.id}</td>
+                <td>${item.name}</td>
+                <td>${item.subject}</td>
+                <td>${item.score}</td>
+                <td>${item.grade}</td>
+                <td><span class="badge ${badgeClass}">${item.status}</span></td>
+                <td><button class="btn-delete" onclick="deleteEntry(${index})">حذف</button></td>
+            `;
+            tableBody.appendChild(tr);
+        });
+    }
+
+    // حذف نتيجة
+    function deleteEntry(index) {
+        if (confirm('هل أنت تأكد من حذف هذه النتيجة؟')) {
+            results.splice(index, 1);
+            saveData();
+            renderTable();
+        }
+    }
+
+    // البحث التفاعلي
+    searchInput.addEventListener('input', function() {
+        const query = this.value.toLowerCase().trim();
+        const filtered = results.filter(item => 
+            item.name.toLowerCase().includes(query) || 
+            item.id.toLowerCase().includes(query) ||
+            item.subject.toLowerCase().includes(query)
+        );
+        renderTable(filtered);
+    });
+</script>
+
+</body>
+</html>
+
