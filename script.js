@@ -1,5 +1,5 @@
 // =========================================================
-// 1. استيراد مكتبات Firebase من CDN
+// 1. استيراد مكتبات Firebase عبر CDN
 // =========================================================
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { 
@@ -23,7 +23,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 // =========================================================
-// 2. بيانات مشروعك الخاص بـ Firebase
+// 2. إعدادات Firebase الخاصة بالمشروع
 // =========================================================
 const firebaseConfig = {
   apiKey: "AIzaSyA4YOFdX_LT4G1YO3MBu2Odf312657g4C4",
@@ -34,7 +34,7 @@ const firebaseConfig = {
   appId: "1:24575054302:web:678ee8ede9ebbab0558d4f"
 };
 
-// تهيئة Firebase
+// تهيئة الخدمة
 let app, auth, db;
 try {
     app = initializeApp(firebaseConfig);
@@ -87,19 +87,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const toRegisterBtn = document.getElementById('toRegisterBtn');
     const toLoginBtn = document.getElementById('toLoginBtn');
 
-    toRegisterBtn?.addEventListener('click', () => {
+    toRegisterBtn?.addEventListener('click', (e) => {
+        e.preventDefault();
         loginFormContainer.classList.add('hidden');
         registerFormContainer.classList.remove('hidden');
     });
 
-    toLoginBtn?.addEventListener('click', () => {
+    toLoginBtn?.addEventListener('click', (e) => {
+        e.preventDefault();
         registerFormContainer.classList.add('hidden');
         loginFormContainer.classList.remove('hidden');
     });
 });
 
 // =========================================================
-// 4. مراقبة حالة جلسة المستخدم (Auth Observer)
+// 4. مراقبة حالة تسجيل الدخول (Auth Observer)
 // =========================================================
 if (auth) {
     onAuthStateChanged(auth, async (user) => {
@@ -115,7 +117,7 @@ if (auth) {
                     document.getElementById('welcomeTeacherText').textContent = `مرحباً بك، ${teacherDoc.data().fullName}`;
                 }
             } catch (err) {
-                console.log("لم يتم العثور على بيانات إضافية للمعلم");
+                console.log("تعذر جلب اسم المعلم الإضافي.");
             }
 
             if (btnTeacherTab.classList.contains('active')) {
@@ -134,7 +136,7 @@ if (auth) {
 }
 
 // =========================================================
-// 5. استعلام الطالب عن النتيجة
+// 5. استعلام الطالب عن جميع مواده
 // =========================================================
 document.getElementById('studentSearchForm')?.addEventListener('submit', async function(e) {
     e.preventDefault();
@@ -160,7 +162,7 @@ document.getElementById('studentSearchForm')?.addEventListener('submit', async f
                 htmlContent += `
                     <div class="result-box ${statusClass}" style="margin-top:10px;">
                         <div class="result-header">
-                            <div class="student-name">${student.studentName}</div>
+                            <div class="student-name" style="font-weight:bold;">${student.studentName}</div>
                             <span class="badge ${badgeClass}">${student.status}</span>
                         </div>
                         <div class="result-grid">
@@ -175,10 +177,10 @@ document.getElementById('studentSearchForm')?.addEventListener('submit', async f
             resultBox.innerHTML = htmlContent;
         } else {
             resultBox.className = 'result-box fail';
-            resultBox.innerHTML = `<div style="text-align: center; color: var(--danger); font-weight: 700;">عذراً، لم يتم العثور على أي نتيجة برقم الجلوس: (${seatNo})</div>`;
+            resultBox.innerHTML = `<div style="text-align: center; color: var(--danger); font-weight: 700;">عذراً، لم يتم العثور على نتائج برقم الجلوس: (${seatNo})</div>`;
         }
     } catch (error) {
-        console.error("خطأ:", error);
+        console.error("خطأ أثناء البحث:", error);
         resultBox.className = 'result-box fail';
         resultBox.innerHTML = `<div style="text-align:center; color:var(--danger);">حدث خطأ أثناء الاتصال بقاعدة البيانات.</div>`;
     }
@@ -198,7 +200,7 @@ document.getElementById('loginForm')?.addEventListener('submit', async function(
         this.reset();
         errorMsg.classList.add('hidden');
     } catch (error) {
-        errorMsg.textContent = "بيانات الدخول غير صحيحة، أو الحساب غير موجود.";
+        errorMsg.textContent = "بيانات الدخول غير صحيحة، أو لم يفعّل حسابك بعد.";
         errorMsg.classList.remove('hidden');
     }
 });
@@ -217,21 +219,21 @@ document.getElementById('registerForm')?.addEventListener('submit', async functi
     errorMsg.classList.add('hidden');
 
     try {
-        // التحقق من كود الاعتماد في Firestore
+        // التحقق من وجود الكود وصلاحيته
         const codeRef = doc(db, "approved_teacher_codes", teacherCode);
         const codeSnap = await getDoc(codeRef);
 
         if (!codeSnap.exists() || codeSnap.data().isUsed === true) {
-            errorMsg.textContent = "كود الاعتماد هذا غير صالح أو سبق استخدامه.";
+            errorMsg.textContent = "كود الاعتماد هذا غير صالح أو تم استخدامه مسبقاً.";
             errorMsg.classList.remove('hidden');
             return;
         }
 
-        // إنشاء الحساب
+        // إنشاء المستخدم في Authentication
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
-        // حفظ بيانات المعلم
+        // حفظ بيانات المعلم في Firestore
         await setDoc(doc(db, "teachers", user.uid), {
             uid: user.uid,
             fullName: fullName,
@@ -240,10 +242,10 @@ document.getElementById('registerForm')?.addEventListener('submit', async functi
             createdAt: new Date()
         });
 
-        // تعطيل الكود حتى لا يُستخدم مجدداً
+        // تحويل حالة الكود إلى مستخدم
         await setDoc(codeRef, { isUsed: true, usedBy: user.uid }, { merge: true });
 
-        alert("تم حساب المعلم بنجاح!");
+        alert("تم إنشاء حساب المعلم بنجاح!");
         this.reset();
         document.getElementById('loginFormContainer').classList.remove('hidden');
         document.getElementById('registerFormContainer').classList.add('hidden');
@@ -254,39 +256,57 @@ document.getElementById('registerForm')?.addEventListener('submit', async functi
 });
 
 // =========================================================
-// 8. إضافة نتيجة جديدة
+// 8. إضافة درجات المواد المدمجة دفعة واحدة
 // =========================================================
 document.getElementById('addGradeForm')?.addEventListener('submit', async function(e) {
     e.preventDefault();
-    if (!currentTeacherUser) return;
+    if (!currentTeacherUser || !db) return;
 
     const seatNumber = document.getElementById('seatNumber').value.trim();
     const studentName = document.getElementById('studentName').value.trim();
-    const subject = document.getElementById('subjectName').value.trim();
-    const score = parseFloat(document.getElementById('score').value);
+    const subjectInputs = document.querySelectorAll('.subject-input');
 
-    const evalData = getEvaluation(score);
+    let hasAtLeastOneScore = false;
+    const savePromises = [];
+
+    subjectInputs.forEach(input => {
+        const scoreVal = input.value.trim();
+        if (scoreVal !== '') {
+            hasAtLeastOneScore = true;
+            const score = parseFloat(scoreVal);
+            const subjectName = input.getAttribute('data-subject');
+            const evalData = getEvaluation(score);
+
+            savePromises.push(addDoc(collection(db, "grades"), {
+                seatNumber,
+                studentName,
+                subject: subjectName,
+                score,
+                grade: evalData.grade,
+                status: evalData.status,
+                teacherUid: currentTeacherUser.uid,
+                createdAt: new Date()
+            }));
+        }
+    });
+
+    if (!hasAtLeastOneScore) {
+        alert('يرجى إدخال درجة مادة واحدة على الأقل!');
+        return;
+    }
 
     try {
-        await addDoc(collection(db, "grades"), {
-            seatNumber,
-            studentName,
-            subject,
-            score,
-            grade: evalData.grade,
-            status: evalData.status,
-            teacherUid: currentTeacherUser.uid,
-            createdAt: new Date()
-        });
-
-        alert('تم حفظ النتيجة بنجاح!');
+        await Promise.all(savePromises);
+        alert('تم حفظ كافة الدرجات المحددة بنجاح!');
         this.reset();
         loadTeacherGrades();
     } catch (error) {
-        alert("حدث خطأ في الحفظ!");
+        console.error("خطأ الحفظ:", error);
+        alert("حدث خطأ أثناء الاتصال بقاعدة البيانات لعملية الحفظ!");
     }
 });
 
+// حساب التقديرات تلقائياً
 function getEvaluation(score) {
     if (score >= 90) return { grade: 'ممتاز (A)', status: 'ناجح' };
     if (score >= 80) return { grade: 'جيد جداً (B)', status: 'ناجح' };
@@ -296,10 +316,10 @@ function getEvaluation(score) {
 }
 
 // =========================================================
-// 9. عرض سجل نتائج المعلم
+// 9. عرض وسجل درجات المعلم الحالي
 // =========================================================
 async function loadTeacherGrades() {
-    if (!currentTeacherUser) return;
+    if (!currentTeacherUser || !db) return;
     const tbody = document.getElementById('teacherTableBody');
     tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">جاري تحميل البيانات...</td></tr>';
 
@@ -331,20 +351,23 @@ async function loadTeacherGrades() {
             tbody.appendChild(tr);
         });
 
+        // تفعيل زر الحذف لكل مادة
         document.querySelectorAll('.delete-btn').forEach(btn => {
             btn.addEventListener('click', async function() {
                 const id = this.getAttribute('data-id');
-                if (confirm('هل أنت تأكد من الحذف؟')) {
+                if (confirm('هل أنت تأكد من حذف هذه المادة؟')) {
                     await deleteDoc(doc(db, "grades", id));
                     loadTeacherGrades();
                 }
             });
         });
     } catch (error) {
+        console.error("خطأ التحميل:", error);
         tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:red;">خطأ في تحميل البيانات</td></tr>';
     }
 }
 
+// تسجيل الخروج
 document.getElementById('logoutBtn')?.addEventListener('click', () => {
     if (auth) signOut(auth);
 });
