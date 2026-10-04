@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام نتائج الطلاب الإلكتروني</title>
+    <title>نظام نتائج الطلاب الإلكتروني - Firebase</title>
     <!-- استيراد خط Tajawal -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -320,6 +320,12 @@
             margin-top: 14px;
             font-weight: 700;
         }
+        .link-toggle {
+            color: var(--accent);
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
@@ -329,11 +335,11 @@
     <div class="navbar">
         <div class="brand">
             <div class="brand-icon">🎓</div>
-            <h1>نتائج الطلاب</h1>
+            <h1>نتائج الطلاب - Firebase</h1>
         </div>
         <div class="nav-tabs">
-            <button id="btnStudentTab" class="nav-btn active" onclick="switchTab('student')">استعلام الطالب</button>
-            <button id="btnTeacherTab" class="nav-btn" onclick="switchTab('teacher')">بوابة المعلم</button>
+            <button id="btnStudentTab" class="nav-btn active">استعلام الطالب</button>
+            <button id="btnTeacherTab" class="nav-btn">بوابة المعلم</button>
         </div>
     </div>
 
@@ -341,7 +347,7 @@
     <div id="studentView" class="card">
         <div class="card-header">
             <h2>الاستعلام عن النتيجة</h2>
-            <p>أدخل رقم الجلوس الخاص بك للاطلاع على درجاتك</p>
+            <p>أدخل رقم الجلوس الخاص بك للاطلاع على درجاتك من قاعدة البيانات السحابية</p>
         </div>
         
         <form id="studentSearchForm">
@@ -349,41 +355,81 @@
                 <label for="searchSeatNumber">رقم الجلوس</label>
                 <input type="text" id="searchSeatNumber" placeholder="مثال: 1001" required>
             </div>
-            <button type="submit" class="btn">عرض النتيجة الان</button>
+            <button type="submit" class="btn">عرض النتيجة الآن</button>
         </form>
 
         <div id="studentResultBox" class="hidden"></div>
     </div>
 
-    <!-- 2. واجهة تسجيل دخول المعلم -->
-    <div id="teacherLoginView" class="card hidden">
-        <div class="card-header">
-            <h2>تسجيل دخول المعلم</h2>
-            <p>أدخل بيانات الاعتماد الخاصة بك للوصول للوحة التحكم</p>
+    <!-- 2. واجهة المعلم (دخول / تسجيل معلم جديد) -->
+    <div id="teacherAuthView" class="card hidden">
+        <!-- نموذج تسجيل الدخول -->
+        <div id="loginFormContainer">
+            <div class="card-header">
+                <h2>تسجيل دخول المعلم</h2>
+                <p>أدخل حسابك للوصول إلى لوحة التحكم الخاص بك</p>
+            </div>
+            
+            <form id="loginForm" style="max-width: 400px; margin: 0 auto;">
+                <div class="form-group">
+                    <label for="email">البريد الإلكتروني</label>
+                    <input type="email" id="email" placeholder="teacher@school.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">كلمة المرور</label>
+                    <input type="password" id="password" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn">تسجيل الدخول</button>
+                <div id="loginError" class="alert-error hidden"></div>
+                
+                <p style="text-align: center; margin-top: 15px; font-size: 14px;">
+                    ليس لديك حساب؟ <span id="toRegisterBtn" class="link-toggle">تسجيل معلم جديد</span>
+                </p>
+            </form>
         </div>
-        
-        <form id="loginForm" style="max-width: 400px; margin: 0 auto;">
-            <div class="form-group">
-                <label for="username">اسم المستخدم</label>
-                <input type="text" id="username" placeholder="admin" required>
+
+        <!-- نموذج تسجيل معلم جديد (يتطلب كود فريد) -->
+        <div id="registerFormContainer" class="hidden">
+            <div class="card-header">
+                <h2>تسجيل معلم جديد</h2>
+                <p>يتطلب كود فريد مسبق من إدارة المدرسة</p>
             </div>
-            <div class="form-group">
-                <label for="password">كلمة المرور</label>
-                <input type="password" id="password" placeholder="123456" required>
-            </div>
-            <button type="submit" class="btn">دخول لوحة التحكم</button>
-            <div id="loginError" class="alert-error hidden">اسم المستخدم أو كلمة المرور غير صحيحة!</div>
-        </form>
+            
+            <form id="registerForm" style="max-width: 400px; margin: 0 auto;">
+                <div class="form-group">
+                    <label for="regFullName">الاسم الكامل</label>
+                    <input type="text" id="regFullName" placeholder="أ. أحمد محمود" required>
+                </div>
+                <div class="form-group">
+                    <label for="regTeacherCode">كود اعتماد المعلم الفريد</label>
+                    <input type="text" id="regTeacherCode" placeholder="أدخل الكود المعتمد (مثال: TCH-1001)" required>
+                </div>
+                <div class="form-group">
+                    <label for="regEmail">البريد الإلكتروني</label>
+                    <input type="email" id="regEmail" placeholder="teacher@school.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="regPassword">كلمة المرور (6 أحرف على الأقل)</label>
+                    <input type="password" id="regPassword" placeholder="••••••••" minlength="6" required>
+                </div>
+                <button type="submit" class="btn">إنشاء حساب معلم معتمد</button>
+                <div id="registerError" class="alert-error hidden"></div>
+                
+                <p style="text-align: center; margin-top: 15px; font-size: 14px;">
+                    لديك حساب بالفعل؟ <span id="toLoginBtn" class="link-toggle">تسجيل الدخول</span>
+                </p>
+            </form>
+        </div>
     </div>
 
-    <!-- 3. لوحة تحكم المعلم -->
+    <!-- 3. لوحة تحكم المعلم (Dashboard) -->
     <div id="teacherDashboardView" class="card hidden">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <div>
-                <h2 style="font-size: 20px;">لوحة تسجيل وإدارة الدرجات</h2>
-                <p style="color: var(--text-muted); font-size: 13px;">قم بإضافة وتحديث نتائج الطلاب بسهولة</p>
+                <h2 style="font-size: 20px;" id="welcomeTeacherText">مرحباً بك معلمنا القدير</h2>
+                <p style="color: var(--text-muted); font-size: 13px;">لوحة إضافة وإدارة نتائج الطلاب في Firestore</p>
             </div>
-            <button class="btn btn-danger" onclick="teacherLogout()">تسجيل الخروج</button>
+            <button id="logoutBtn" class="btn btn-danger">تسجيل الخروج</button>
         </div>
 
         <!-- نموذج إدخال نتيجة جديدة -->
@@ -404,11 +450,11 @@
                 <label>الدرجة (من 100)</label>
                 <input type="number" id="score" min="0" max="100" required placeholder="85">
             </div>
-            <button type="submit" class="btn" style="grid-column: 1 / -1;">حفظ وتأكيد النتيجة</button>
+            <button type="submit" class="btn" style="grid-column: 1 / -1;">حفظ النتيجة في قاعدة البيانات</button>
         </form>
 
-        <!-- سجل الدرجات -->
-        <h3 style="font-size: 16px; margin-bottom: 12px; color: var(--primary);">سجل النتائج المسجلة</h3>
+        <!-- سجل النتائج المضافة -->
+        <h3 style="font-size: 16px; margin-bottom: 12px; color: var(--primary);">سجل درجات طلابك</h3>
         <div class="table-responsive">
             <table>
                 <thead>
@@ -428,8 +474,8 @@
     </div>
 </div>
 
-<!-- ربط ملف الجافا سكريبت الخارجي -->
-<script src="script.js"></script>
+<!-- ربط ملف الجافا سكريبت الخارجي كـ Module -->
+<script type="module" src="script.js"></script>
 
 </body>
 </html>
