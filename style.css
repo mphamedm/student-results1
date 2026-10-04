@@ -21,7 +21,6 @@
     --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
 }
 
-/* ألوان الوضع الليلي (Dark Mode) */
 body.dark-mode {
     --bg: #0f172a;
     --card-bg: #1e293b;
@@ -52,6 +51,7 @@ body {
     justify-content: center;
     padding: 30px 15px;
     min-height: 100vh;
+    direction: rtl;
 }
 
 .container {
@@ -60,7 +60,7 @@ body {
 }
 
 /* =========================================================
-   2. الشريط الأعلى وتبديل الوضع (Header & Dark Mode)
+   2. الشريط الأعلى وتبديل الوضع (Header & Tabs)
    ========================================================= */
 .top-header {
     display: flex;
@@ -112,6 +112,7 @@ body {
     align-items: center;
     justify-content: center;
     box-shadow: var(--shadow);
+    flex-shrink: 0;
 }
 
 .theme-toggle-btn:hover {
@@ -193,10 +194,9 @@ label {
     background: var(--danger-hover);
 }
 
-/* شبكة المواد */
 .subjects-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 12px;
     background: var(--bg);
     padding: 18px;
@@ -233,13 +233,6 @@ label {
 .result-box.pass { border-right: 6px solid var(--success); }
 .result-box.fail { border-right: 6px solid var(--danger); }
 
-.result-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
-}
-
 .badge {
     padding: 6px 14px;
     border-radius: 30px;
@@ -271,29 +264,34 @@ label {
 }
 
 /* =========================================================
-   5. جدول الدرجات المعروض للمعلم (Table)
+   5. الجدول والتجاوب مع الهواتف (Table Mobile Fixes)
    ========================================================= */
 .table-responsive {
+    width: 100%;
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-top: 15px;
     border-radius: 12px;
     border: 1px solid var(--border);
 }
 
 table {
     width: 100%;
+    min-width: 650px;
     border-collapse: collapse;
-    background: var(--card-bg);
+    background-color: var(--card-bg);
 }
 
 th, td {
     padding: 14px 12px;
-    text-align: right;
+    text-align: center;
+    white-space: nowrap;
     border-bottom: 1px solid var(--border);
     font-size: 14px;
 }
 
 th {
-    background: var(--bg);
+    background-color: var(--bg);
     color: var(--text-muted);
     font-weight: 700;
 }
