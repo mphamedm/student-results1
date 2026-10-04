@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام تسجيل نتائج الطلاب</title>
+    <title>نظام نتائج الطلاب</title>
     <style>
         :root {
             --primary-color: #2c3e50;
             --accent-color: #3498db;
             --success-color: #2ecc71;
             --danger-color: #e74c3c;
-            --bg-color: #f8f9fa;
+            --bg-color: #f4f6f9;
             --card-bg: #ffffff;
         }
 
@@ -25,283 +25,363 @@
             background-color: var(--bg-color);
             color: #333;
             padding: 20px;
-            line-height: 1.6;
         }
 
         .container {
             max-width: 900px;
             margin: 0 auto;
-            background: var(--card-bg);
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
         }
 
-        header {
-            text-align: center;
+        /* شريط التنقل العلوي */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--primary-color);
+            padding: 15px 20px;
+            border-radius: 10px;
+            color: white;
             margin-bottom: 25px;
         }
 
-        header h1 {
+        .nav-buttons button {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-right: 5px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .nav-buttons button.active, .nav-buttons button:hover {
+            background: var(--accent-color);
+        }
+
+        /* البطاقات والواجهات */
+        .card {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        h2 {
             color: var(--primary-color);
-            font-size: 26px;
-            margin-bottom: 5px;
+            margin-bottom: 20px;
+            font-size: 20px;
         }
 
-        header p {
-            color: #7f8c8d;
-            font-size: 14px;
-        }
-
-        .form-card {
-            background: #fdfdfd;
-            padding: 20px;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            margin-bottom: 30px;
-        }
-
-        .form-card h2 {
-            font-size: 18px;
-            color: var(--primary-color);
+        .form-group {
             margin-bottom: 15px;
         }
 
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+
+        .btn {
+            background-color: var(--accent-color);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            transition: 0.3s;
+        }
+
+        .btn:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            width: auto;
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+
+        /* تصميم كرت النتيجة للطالب */
+        .result-card {
+            background: #eef2f7;
+            border-right: 5px solid var(--accent-color);
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .badge-pass { background-color: var(--success-color); }
+        .badge-fail { background-color: var(--danger-color); }
+
+        /* جدول المعلم */
         .grid-form {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
         }
 
-        .form-group {
-            display: flex;
-            flex-direction: column;
-        }
-
-        label {
-            font-weight: 600;
-            margin-bottom: 6px;
-            font-size: 14px;
-            color: #4a5568;
-        }
-
-        input {
-            padding: 10px 12px;
-            border: 1px solid #cbd5e0;
-            border-radius: 6px;
-            font-size: 15px;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-
-        input:focus {
-            border-color: var(--accent-color);
-        }
-
-        .btn-submit {
-            grid-column: 1 / -1;
-            background-color: var(--accent-color);
-            color: white;
-            padding: 12px;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            margin-top: 5px;
-        }
-
-        .btn-submit:hover {
-            background-color: #2980b9;
-        }
-
-        .table-header-section {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-
-        .table-header-section h2 {
-            font-size: 18px;
-            color: var(--primary-color);
-        }
-
-        .search-input {
-            width: 250px;
-            padding: 8px 12px;
-        }
-
-        .table-responsive {
-            overflow-x: auto;
-        }
-
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
+            margin-top: 15px;
         }
 
         th, td {
-            padding: 12px 15px;
-            text-align: right;
-            border-bottom: 1px solid #e2e8f0;
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
         }
 
         th {
-            background-color: #edf2f7;
-            color: var(--primary-color);
-            font-weight: 600;
-        }
-
-        tr:hover {
-            background-color: #f7fafc;
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        .badge-pass {
-            background-color: #d4edda;
-            color: #155724;
-        }
-
-        .badge-fail {
-            background-color: #f8d7da;
-            color: #721c24;
-        }
-
-        .btn-delete {
-            background-color: #fff;
-            border: 1px solid var(--danger-color);
-            color: var(--danger-color);
-            padding: 4px 8px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
-        }
-
-        .btn-delete:hover {
-            background-color: var(--danger-color);
+            background-color: var(--primary-color);
             color: white;
         }
 
-        .empty-state {
-            text-align: center;
-            color: #a0aec0;
-            padding: 20px;
+        .alert-error {
+            color: var(--danger-color);
+            font-weight: bold;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <header>
-        <h1>نظام تسجيل نتائج الطلاب</h1>
-        <p>إدارة وتسجيل نتائج الطلاب وسجل الدرجات</p>
-    </header>
+    <!-- شريط التنقل -->
+    <div class="navbar">
+        <h2>نظام النتائج الامتحانية</h2>
+        <div class="nav-buttons">
+            <button id="btnStudentTab" class="active" onclick="switchTab('student')">استعلام الطالب</button>
+            <button id="btnTeacherTab" onclick="switchTab('teacher')">بوابة المعلم</button>
+        </div>
+    </div>
 
-    <!-- نموذج الإدخال -->
-    <div class="form-card">
-        <h2>تسجيل نتيجة جديدة</h2>
-        <form id="gradeForm" class="grid-form">
+    <!-- 1. واجهة الطالب -->
+    <div id="studentView" class="card">
+        <h2>الاستعلام عن النتيجة برقم الجلوس</h2>
+        <form id="studentSearchForm">
             <div class="form-group">
-                <label for="studentName">اسم الطالب</label>
-                <input type="text" id="studentName" required placeholder="أدخل اسم الطالب">
+                <label for="searchSeatNumber">أدخل رقم الجلوس:</label>
+                <input type="text" id="searchSeatNumber" placeholder="مثال: 1001" required>
             </div>
+            <button type="submit" class="btn">عرض النتيجة</button>
+        </form>
 
+        <div id="studentResultBox" class="hidden"></div>
+    </div>
+
+    <!-- 2. واجهة تسجيل دخول المعلم -->
+    <div id="teacherLoginView" class="card hidden">
+        <h2>تسجيل دخول المعلم</h2>
+        <form id="loginForm">
             <div class="form-group">
-                <label for="studentId">الرقم الأكاديمي</label>
-                <input type="text" id="studentId" required placeholder="مثال: 1001">
+                <label for="username">اسم المستخدم:</label>
+                <input type="text" id="username" placeholder="اسم المستخدم (admin)" required>
             </div>
-
             <div class="form-group">
-                <label for="subjectName">المادة الدراسية</label>
-                <input type="text" id="subjectName" required placeholder="مثال: الرياضيات">
+                <label for="password">كلمة المرور:</label>
+                <input type="password" id="password" placeholder="كلمة المرور (123456)" required>
             </div>
-
-            <div class="form-group">
-                <label for="score">الدرجة (من 100)</label>
-                <input type="number" id="score" min="0" max="100" required placeholder="أدخل الدرجة">
-            </div>
-
-            <button type="submit" class="btn-submit">إضافة النتيجة</button>
+            <button type="submit" class="btn">تسجيل الدخول</button>
+            <p id="loginError" class="alert-error hidden">بيانات الدخول غير صحيحة!</p>
         </form>
     </div>
 
-    <!-- عرض النتائج -->
-    <div class="table-header-section">
-        <h2>سجل النتائج</h2>
-        <input type="text" id="searchInput" class="search-input" placeholder="بحث باسم الطالب أو الرقم...">
+    <!-- 3. لوحة تحكم المعلم (تظهر بعد تسجيل الدخول) -->
+    <div id="teacherDashboardView" class="card hidden">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2>لوحة إدخال وإدارة الدرجات</h2>
+            <button class="btn btn-danger" onclick="teacherLogout()">تسجيل الخروج</button>
+        </div>
+
+        <!-- نموذج إدخال درجات جديدة -->
+        <form id="addGradeForm" class="grid-form" style="margin-bottom: 30px;">
+            <div class="form-group">
+                <label>رقم الجلوس:</label>
+                <input type="text" id="seatNumber" required placeholder="مثال: 1001">
+            </div>
+            <div class="form-group">
+                <label>اسم الطالب:</label>
+                <input type="text" id="studentName" required placeholder="مثال: أحمد محمد">
+            </div>
+            <div class="form-group">
+                <label>المادة:</label>
+                <input type="text" id="subjectName" required placeholder="مثال: الرياضيات">
+            </div>
+            <div class="form-group">
+                <label>الدرجة (من 100):</label>
+                <input type="number" id="score" min="0" max="100" required placeholder="85">
+            </div>
+            <button type="submit" class="btn" style="grid-column: 1 / -1;">حفظ النتيجة</button>
+        </form>
+
+        <!-- جدول النتائج المسجلة -->
+        <h3>سجل الدرجات المسجلة</h3>
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>رقم الجلوس</th>
+                        <th>اسم الطالب</th>
+                        <th>المادة</th>
+                        <th>الدرجة</th>
+                        <th>التقدير</th>
+                        <th>الحالة</th>
+                        <th>إجراء</th>
+                    </tr>
+                </thead>
+                <tbody id="teacherTableBody"></tbody>
+            </table>
+        </div>
     </div>
 
-    <div class="table-responsive">
-        <table>
-            <thead>
-                <tr>
-                    <th>الرقم الأكاديمي</th>
-                    <th>اسم الطالب</th>
-                    <th>المادة</th>
-                    <th>الدرجة</th>
-                    <th>التقدير</th>
-                    <th>الحالة</th>
-                    <th>إجراءات</th>
-                </tr>
-            </thead>
-            <tbody id="resultsTableBody">
-                <!-- سيتم إضافة البيانات هنا ديناميكياً -->
-            </tbody>
-        </table>
-    </div>
 </div>
 
 <script>
-    // العناصر الرئيسية
-    const form = document.getElementById('gradeForm');
-    const tableBody = document.getElementById('resultsTableBody');
-    const searchInput = document.getElementById('searchInput');
+    // البيانات التخزينية
+    let resultsData = JSON.parse(localStorage.getItem('student_results_app')) || [];
+    let isTeacherLoggedIn = sessionStorage.getItem('isTeacherLoggedIn') === 'true';
 
-    // جلب البيانات المخزنة سابقاً من LocalStorage
-    let results = JSON.parse(localStorage.getItem('student_results_data')) || [];
+    // بيانات تسجيل الدخول الافتراضية
+    const TEACHER_USER = "admin";
+    const TEACHER_PASS = "123456";
 
-    // عرض البيانات عند تحميل الصفحة
-    document.addEventListener('DOMContentLoaded', renderTable);
+    // التنقل بين الأقسام
+    function switchTab(tab) {
+        document.getElementById('btnStudentTab').classList.remove('active');
+        document.getElementById('btnTeacherTab').classList.remove('active');
 
-    // إضافة نتيجة جديدة
-    form.addEventListener('submit', function(e) {
+        document.getElementById('studentView').classList.add('hidden');
+        document.getElementById('teacherLoginView').classList.add('hidden');
+        document.getElementById('teacherDashboardView').classList.add('hidden');
+
+        if (tab === 'student') {
+            document.getElementById('btnStudentTab').classList.add('active');
+            document.getElementById('studentView').classList.remove('hidden');
+        } else if (tab === 'teacher') {
+            document.getElementById('btnTeacherTab').classList.add('active');
+            if (isTeacherLoggedIn) {
+                document.getElementById('teacherDashboardView').classList.remove('hidden');
+                renderTeacherTable();
+            } else {
+                document.getElementById('teacherLoginView').classList.remove('hidden');
+            }
+        }
+    }
+
+    // --- منطق الطالب ---
+    document.getElementById('studentSearchForm').addEventListener('submit', function(e) {
         e.preventDefault();
+        const seatNo = document.getElementById('searchSeatNumber').value.trim();
+        const resultBox = document.getElementById('studentResultBox');
 
+        const foundStudent = resultsData.find(item => item.seatNumber === seatNo);
+
+        if (foundStudent) {
+            const badgeClass = foundStudent.status === 'ناجح' ? 'badge-pass' : 'badge-fail';
+            resultBox.innerHTML = `
+                <div class="result-card">
+                    <div class="result-item"><strong>اسم الطالب:</strong> <span>${foundStudent.name}</span></div>
+                    <div class="result-item"><strong>رقم الجلوس:</strong> <span>${foundStudent.seatNumber}</span></div>
+                    <div class="result-item"><strong>المادة:</strong> <span>${foundStudent.subject}</span></div>
+                    <div class="result-item"><strong>الدرجة:</strong> <span>${foundStudent.score} / 100</span></div>
+                    <div class="result-item"><strong>التقدير:</strong> <span>${foundStudent.grade}</span></div>
+                    <div class="result-item"><strong>الحالة:</strong> <span class="badge ${badgeClass}">${foundStudent.status}</span></div>
+                </div>
+            `;
+        } else {
+            resultBox.innerHTML = `
+                <div class="result-card" style="border-right-color: var(--danger-color);">
+                    <p style="text-align: center; color: var(--danger-color); font-weight: bold;">عفواً، لم يتم العثور على نتيجة لرقم الجلوس: (${seatNo})</p>
+                </div>
+            `;
+        }
+        resultBox.classList.remove('hidden');
+    });
+
+    // --- منطق المعلم ---
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const user = document.getElementById('username').value.trim();
+        const pass = document.getElementById('password').value.trim();
+        const errorMsg = document.getElementById('loginError');
+
+        if (user === TEACHER_USER && pass === TEACHER_PASS) {
+            isTeacherLoggedIn = true;
+            sessionStorage.setItem('isTeacherLoggedIn', 'true');
+            errorMsg.classList.add('hidden');
+            switchTab('teacher');
+        } else {
+            errorMsg.classList.remove('hidden');
+        }
+    });
+
+    function teacherLogout() {
+        isTeacherLoggedIn = false;
+        sessionStorage.removeItem('isTeacherLoggedIn');
+        switchTab('teacher');
+    }
+
+    document.getElementById('addGradeForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const seatNumber = document.getElementById('seatNumber').value.trim();
         const name = document.getElementById('studentName').value.trim();
-        const id = document.getElementById('studentId').value.trim();
         const subject = document.getElementById('subjectName').value.trim();
         const score = parseFloat(document.getElementById('score').value);
 
-        const evaluation = getEvaluation(score);
+        const evalData = getEvaluation(score);
 
         const newEntry = {
-            id: id,
+            seatNumber: seatNumber,
             name: name,
             subject: subject,
             score: score,
-            grade: evaluation.grade,
-            status: evaluation.status
+            grade: evalData.grade,
+            status: evalData.status
         };
 
-        results.push(newEntry);
-        saveData();
-        renderTable();
-        form.reset();
+        resultsData.push(newEntry);
+        localStorage.setItem('student_results_app', JSON.stringify(resultsData));
+
+        renderTeacherTable();
+        this.reset();
     });
 
-    // حساب التقدير والحالة
     function getEvaluation(score) {
         if (score >= 90) return { grade: 'ممتاز (A)', status: 'ناجح' };
         if (score >= 80) return { grade: 'جيد جداً (B)', status: 'ناجح' };
@@ -310,62 +390,38 @@
         return { grade: 'راسب (F)', status: 'راسب' };
     }
 
-    // حفظ البيانات في LocalStorage
-    function saveData() {
-        localStorage.setItem('student_results_data', JSON.stringify(results));
-    }
+    function renderTeacherTable() {
+        const tbody = document.getElementById('teacherTableBody');
+        tbody.innerHTML = '';
 
-    // عرض النتائج في الجدول
-    function renderTable(dataToRender = results) {
-        tableBody.innerHTML = '';
-
-        if (dataToRender.length === 0) {
-            tableBody.innerHTML = `
-                <tr>
-                    <td colspan="7" class="empty-state">لا توجد نتائج مسجلة حتى الآن</td>
-                </tr>
-            `;
+        if (resultsData.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7">لا توجد درجات مسجلة حالياً</td></tr>';
             return;
         }
 
-        dataToRender.forEach((item, index) => {
+        resultsData.forEach((item, index) => {
             const tr = document.createElement('tr');
-            const badgeClass = item.status === 'ناجح' ? 'badge-pass' : 'badge-fail';
-
             tr.innerHTML = `
-                <td>${item.id}</td>
+                <td>${item.seatNumber}</td>
                 <td>${item.name}</td>
                 <td>${item.subject}</td>
                 <td>${item.score}</td>
                 <td>${item.grade}</td>
-                <td><span class="badge ${badgeClass}">${item.status}</span></td>
-                <td><button class="btn-delete" onclick="deleteEntry(${index})">حذف</button></td>
+                <td>${item.status}</td>
+                <td><button class="btn btn-danger" onclick="deleteGrade(${index})">حذف</button></td>
             `;
-            tableBody.appendChild(tr);
+            tbody.appendChild(tr);
         });
     }
 
-    // حذف نتيجة
-    function deleteEntry(index) {
-        if (confirm('هل أنت تأكد من حذف هذه النتيجة؟')) {
-            results.splice(index, 1);
-            saveData();
-            renderTable();
+    function deleteGrade(index) {
+        if (confirm('هل أنت تأكد من حذف النتيجة؟')) {
+            resultsData.splice(index, 1);
+            localStorage.setItem('student_results_app', JSON.stringify(resultsData));
+            renderTeacherTable();
         }
     }
-
-    // البحث التفاعلي
-    searchInput.addEventListener('input', function() {
-        const query = this.value.toLowerCase().trim();
-        const filtered = results.filter(item => 
-            item.name.toLowerCase().includes(query) || 
-            item.id.toLowerCase().includes(query) ||
-            item.subject.toLowerCase().includes(query)
-        );
-        renderTable(filtered);
-    });
 </script>
 
 </body>
 </html>
-
