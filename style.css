@@ -1,67 +1,51 @@
-/* =========================================================
-   1. المتغيرات والأنماط الأساسية (Light & Dark Themes)
-   ========================================================= */
 :root {
-    --primary: #4f46e5;
-    --primary-hover: #4338ca;
-    --primary-light: #e0e7ff;
-    --bg: #f8fafc;
+    --bg-color: #f4f6f9;
     --card-bg: #ffffff;
-    --text: #0f172a;
-    --text-muted: #64748b;
-    --border: #e2e8f0;
-    --input-bg: #ffffff;
+    --text: #1f2937;
+    --text-muted: #6b7280;
+    --primary: #2563eb;
+    --primary-light: #eff6ff;
+    --primary-hover: #1d4ed8;
     --danger: #ef4444;
-    --danger-hover: #dc2626;
     --success: #10b981;
-    --badge-pass-bg: #d1fae5;
-    --badge-pass-text: #065f46;
-    --badge-fail-bg: #fee2e2;
-    --badge-fail-text: #991b1b;
-    --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+    --border: #e5e7eb;
+    --input-bg: #ffffff;
 }
 
 body.dark-mode {
-    --bg: #0f172a;
+    --bg-color: #0f172a;
     --card-bg: #1e293b;
     --text: #f8fafc;
     --text-muted: #94a3b8;
+    --primary: #3b82f6;
+    --primary-light: #1e3a8a;
+    --primary-hover: #60a5fa;
+    --danger: #f87171;
+    --success: #34d399;
     --border: #334155;
     --input-bg: #0f172a;
-    --primary-light: #312e81;
-    --badge-pass-bg: #064e3b;
-    --badge-pass-text: #a7f3d0;
-    --badge-fail-bg: #7f1d1d;
-    --badge-fail-text: #fecaca;
-    --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
 }
 
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 body {
-    background-color: var(--bg);
+    background-color: var(--bg-color);
     color: var(--text);
-    display: flex;
-    justify-content: center;
-    padding: 30px 15px;
-    min-height: 100vh;
+    transition: background-color 0.3s, color 0.3s;
+    padding: 20px;
     direction: rtl;
 }
 
 .container {
-    width: 100%;
-    max-width: 850px;
+    max-width: 900px;
+    margin: 0 auto;
 }
 
-/* =========================================================
-   2. الشريط الأعلى وتبديل الوضع (Header & Tabs)
-   ========================================================= */
 .top-header {
     display: flex;
     justify-content: space-between;
@@ -71,136 +55,46 @@ body {
 
 .header-tabs {
     display: flex;
-    background: var(--card-bg);
-    padding: 6px;
-    border-radius: 14px;
-    border: 1px solid var(--border);
-    gap: 6px;
-    flex: 1;
-    margin-left: 15px;
+    gap: 10px;
 }
 
 .tab-btn {
-    flex: 1;
-    padding: 12px;
-    border: none;
-    background: transparent;
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--text-muted);
+    padding: 10px 20px;
+    border: 1px solid var(--border);
+    background: var(--card-bg);
+    color: var(--text);
+    border-radius: 8px;
     cursor: pointer;
-    border-radius: 10px;
-    transition: all 0.2s ease;
+    font-weight: 600;
+    transition: all 0.2s;
 }
 
 .tab-btn.active {
     background: var(--primary);
     color: #ffffff;
-    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+    border-color: var(--primary);
 }
 
 .theme-toggle-btn {
     background: var(--card-bg);
     border: 1px solid var(--border);
     color: var(--text);
-    width: 48px;
-    height: 48px;
-    border-radius: 12px;
-    font-size: 20px;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
     cursor: pointer;
+    font-size: 18px;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: var(--shadow);
-    flex-shrink: 0;
+    transition: all 0.2s;
 }
 
-.theme-toggle-btn:hover {
-    transform: scale(1.05);
-}
-
-/* =========================================================
-   3. الكروت والنماذج (Cards & Forms)
-   ========================================================= */
 .card {
     background: var(--card-bg);
-    padding: 30px;
-    border-radius: 20px;
-    box-shadow: var(--shadow);
-    border: 1px solid var(--border);
-    margin-bottom: 20px;
-}
-
-h2, h3, h4 {
-    margin-bottom: 18px;
-    color: var(--text);
-    font-weight: 700;
-}
-
-.form-group {
-    margin-bottom: 18px;
-}
-
-label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 600;
-    font-size: 14px;
-    color: var(--text);
-}
-
-.form-control {
-    width: 100%;
-    padding: 12px 16px;
-    background-color: var(--input-bg);
-    color: var(--text);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    font-size: 15px;
-    outline: none;
-}
-
-.form-control:focus {
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
-}
-
-.btn {
-    padding: 12px 22px;
-    border: none;
-    border-radius: 10px;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.btn-primary {
-    background: var(--primary);
-    color: white;
-}
-
-.btn-primary:hover {
-    background: var(--primary-hover);
-    transform: translateY(-1px);
-}
-
-.btn-danger {
-    background: var(--danger);
-    color: white;
-}
-
-.btn-danger:hover {
-    background: var(--danger-hover);
-}
-
-.subjects-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 12px;
-    background: var(--bg);
-    padding: 18px;
-    border-radius: 14px;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     border: 1px solid var(--border);
     margin-bottom: 20px;
 }
@@ -209,93 +103,203 @@ label {
     display: none !important;
 }
 
-.error-msg {
-    background: rgba(239, 68, 68, 0.1);
-    color: var(--danger);
-    border: 1px solid var(--danger);
-    padding: 12px;
-    border-radius: 10px;
-    margin-top: 15px;
-    font-size: 14px;
+.form-group {
+    margin-bottom: 15px;
 }
 
-/* =========================================================
-   4. نتائج الطالب (Results Box)
-   ========================================================= */
-.result-box {
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 18px;
-    margin-top: 15px;
-}
-
-.result-box.pass { border-right: 6px solid var(--success); }
-.result-box.fail { border-right: 6px solid var(--danger); }
-
-.badge {
-    padding: 6px 14px;
-    border-radius: 30px;
-    font-size: 13px;
-    font-weight: 700;
-}
-
-.badge-pass { background: var(--badge-pass-bg); color: var(--badge-pass-text); }
-.badge-fail { background: var(--badge-fail-bg); color: var(--badge-fail-text); }
-
-.result-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-    gap: 10px;
-}
-
-.result-item {
-    background: var(--card-bg);
-    padding: 12px;
-    border-radius: 10px;
-    border: 1px solid var(--border);
-}
-
-.result-item span {
+.form-group label {
     display: block;
-    font-size: 12px;
-    color: var(--text-muted);
-    margin-bottom: 4px;
+    margin-bottom: 6px;
+    font-size: 14px;
+    font-weight: 600;
 }
 
-/* =========================================================
-   5. الجدول والتجاوب مع الهواتف (Table Mobile Fixes)
-   ========================================================= */
-.table-responsive {
+.form-control {
     width: 100%;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    margin-top: 15px;
-    border-radius: 12px;
+    padding: 10px 14px;
     border: 1px solid var(--border);
+    background-color: var(--input-bg);
+    color: var(--text);
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.form-control:focus {
+    border-color: var(--primary);
+}
+
+.btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+}
+
+.btn-primary {
+    background-color: var(--primary);
+    color: #ffffff;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-hover);
+}
+
+.btn-danger {
+    background-color: var(--danger);
+    color: #ffffff;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: #ffffff;
+}
+
+.subjects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin: 15px 0;
+}
+
+.table-responsive {
+    overflow-x: auto;
 }
 
 table {
     width: 100%;
-    min-width: 650px;
     border-collapse: collapse;
-    background-color: var(--card-bg);
+    margin-top: 15px;
 }
 
 th, td {
-    padding: 14px 12px;
-    text-align: center;
-    white-space: nowrap;
+    padding: 12px;
+    text-align: right;
     border-bottom: 1px solid var(--border);
     font-size: 14px;
 }
 
 th {
-    background-color: var(--bg);
-    color: var(--text-muted);
+    background-color: var(--primary-light);
+    color: var(--text);
+}
+
+.badge {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
     font-weight: 700;
 }
 
-tr:last-child td {
-    border-bottom: none;
+.badge-pass {
+    background-color: rgba(16, 185, 129, 0.15);
+    color: var(--success);
+}
+
+.badge-fail {
+    background-color: rgba(239, 68, 68, 0.15);
+    color: var(--danger);
+}
+
+.result-box {
+    margin-top: 20px;
+    padding: 20px;
+    border-radius: 12px;
+    background-color: var(--card-bg);
+    border: 2px solid var(--primary);
+}
+
+.result-box.fail {
+    border-color: var(--danger);
+}
+
+.result-grid {
+    display: grid;
+    gap: 15px;
+}
+
+.error-msg {
+    color: var(--danger);
+    font-size: 13px;
+    margin-top: 10px;
+}
+
+/* =========================================================
+   تنسيقات النوافذ المنبثقة الاحترافية (Custom Modals)
+   ========================================================= */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+
+.modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-box {
+    background: var(--card-bg);
+    color: var(--text);
+    padding: 28px 24px;
+    border-radius: 16px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    transform: scale(0.85);
+    transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 1px solid var(--border);
+}
+
+.modal-overlay.active .modal-box {
+    transform: scale(1);
+}
+
+.modal-icon {
+    font-size: 52px;
+    margin-bottom: 12px;
+    line-height: 1;
+}
+
+.modal-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.modal-message {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 22px;
+    line-height: 1.6;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.modal-btn-secondary {
+    background-color: var(--border);
+    color: var(--text);
+}
+
+.modal-btn-secondary:hover {
+    filter: brightness(0.9);
 }
