@@ -1,1 +1,1142 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة الشرف - مدرسة الكداريك الابتدائية المشتركة</title>
+    <!-- خط Tajawal -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #1e3c72;
+            --primary-gradient: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            --accent: #f59e0b;
+            --accent-gradient: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            --bg-body: #f4f7fa;
+            --bg-card: #ffffff;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --danger: #ef4444;
+            --radius: 16px;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+        }
+
+        .dark-mode {
+            --bg-body: #0b0f19;
+            --bg-card: #151c2c;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #1e293b;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Tajawal', sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding-bottom: 50px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* الهيدر الأنيق والشعار */
+        header {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 15px 25px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .school-logo {
+            width: 55px;
+            height: 55px;
+            background: var(--primary-gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 1.6rem;
+            box-shadow: 0 4px 12px rgba(30, 60, 114, 0.3);
+        }
+
+        .logo-text h1 {
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .dark-mode .logo-text h1 {
+            color: #38bdf8;
+        }
+
+        .logo-text p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .tabs-nav {
+            display: flex;
+            background: var(--bg-body);
+            padding: 4px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .tab-btn {
+            border: none;
+            background: transparent;
+            padding: 8px 18px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+
+        .tab-btn.active {
+            background: var(--primary-gradient);
+            color: #fff;
+            box-shadow: 0 4px 10px rgba(30, 60, 114, 0.2);
+        }
+
+        .theme-toggle {
+            background: var(--bg-body);
+            border: 1px solid var(--border);
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* الأزرار العامة */
+        .btn {
+            padding: 10px 20px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .btn-primary { background: var(--primary-gradient); color: #fff; }
+        .btn-accent { background: var(--accent-gradient); color: #fff; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3); }
+        .btn-secondary { background: var(--border); color: var(--text-main); }
+        .btn-danger { background: var(--danger); color: #fff; }
+
+        /* البطاقات والنماذج */
+        .card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 30px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--text-main);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: var(--bg-body);
+            color: var(--text-main);
+            outline: none;
+            font-size: 0.95rem;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(30, 60, 114, 0.1);
+        }
+
+        .password-wrapper {
+            position: relative;
+        }
+
+        .toggle-password-btn {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-muted);
+        }
+
+        .hidden { display: none !important; }
+
+        /* شبكة لوحة الشرف الأنيقة */
+        .top-students-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+            margin-top: 25px;
+        }
+
+        .top-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 25px 20px;
+            position: relative;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow: hidden;
+            transform: translateY(0);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .top-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.08);
+        }
+
+        .top-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: var(--accent-gradient);
+        }
+
+        .rank-badge {
+            display: inline-block;
+            background: rgba(245, 158, 11, 0.1);
+            color: #d97706;
+            font-weight: 800;
+            padding: 6px 16px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            margin-bottom: 15px;
+        }
+
+        .student-avatar {
+            width: 70px;
+            height: 70px;
+            background: rgba(30, 60, 114, 0.08);
+            color: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin: 0 auto 15px auto;
+        }
+
+        .dark-mode .student-avatar {
+            background: rgba(56, 189, 248, 0.1);
+            color: #38bdf8;
+        }
+
+        .student-name {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 6px;
+            text-align: center;
+        }
+
+        .dark-mode .student-name {
+            color: #38bdf8;
+        }
+
+        .student-grade {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .student-score {
+            background: var(--bg-body);
+            color: var(--success);
+            font-weight: 800;
+            padding: 10px;
+            border-radius: 12px;
+            font-size: 1.05rem;
+            border: 1px dashed var(--border);
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        /* قسم التعليقات داخل كارت التلميذ */
+        .comments-section {
+            border-top: 1px solid var(--border);
+            padding-top: 12px;
+            margin-top: 10px;
+        }
+
+        .comments-list {
+            max-height: 140px;
+            overflow-y: auto;
+            margin-bottom: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding-left: 5px;
+        }
+
+        .comment-item {
+            background: var(--bg-body);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            border: 1px solid var(--border);
+            position: relative;
+        }
+
+        .comment-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2px;
+        }
+
+        .comment-author {
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .dark-mode .comment-author {
+            color: #38bdf8;
+        }
+
+        .delete-comment-btn {
+            background: none;
+            border: none;
+            color: var(--danger);
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: bold;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        .delete-comment-btn:hover {
+            background: #fee2e2;
+        }
+
+        .add-comment-form {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .add-comment-form input {
+            width: 100%;
+            padding: 8px 10px;
+            font-size: 0.85rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--bg-body);
+            color: var(--text-main);
+            outline: none;
+        }
+
+        .add-comment-form button {
+            padding: 8px 12px;
+            font-size: 0.85rem;
+            border-radius: 8px;
+            border: none;
+            background: var(--primary);
+            color: #fff;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .delete-top-btn {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: #fee2e2;
+            color: #ef4444;
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* النوافذ المنبثقة (Modals) */
+        .custom-modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 15px;
+        }
+
+        .custom-modal.active {
+            display: flex;
+        }
+
+        .modal-body-content {
+            background: var(--bg-card);
+            padding: 30px;
+            border-radius: var(--radius);
+            max-width: 450px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- الهيدر المطور مع الشعار -->
+    <header>
+        <div class="logo-area">
+            <div class="school-logo">🎓</div>
+            <div class="logo-text">
+                <h1>مدرسة الكداريك الابتدائية</h1>
+                <p>لوحة الشرف الرسمية للمتميزين والأوائل</p>
+            </div>
+        </div>
+        <div class="header-controls">
+            <div class="tabs-nav">
+                <button id="btnPublicTab" class="tab-btn active">🌟 لوحة الشرف</button>
+                <button id="btnTeacherTab" class="tab-btn">🔒 بوابة المعلم</button>
+            </div>
+            <button id="themeToggleBtn" class="theme-toggle" title="تبديل الوضع الليلي">🌙</button>
+        </div>
+    </header>
+
+    <!-- 1. واجهة العامة والطلاب -->
+    <section id="publicView">
+        <div style="text-align: center; margin-bottom: 30px;">
+            <h2 style="color: var(--primary); font-size: 2rem; font-weight: 800; margin-bottom: 8px;">✨ نخبة المتفوقين الأوائل ✨</h2>
+            <p style="color: var(--text-muted); font-size: 1.05rem;">نحتفي بجهود أبنائنا الطلاب المبدعين وندعم مسيرتهم نحو التميز.</p>
+        </div>
+
+        <div class="card" style="padding: 15px; margin-bottom: 25px;">
+            <input type="text" id="searchTopStudentsInput" class="form-control" placeholder="🔍 ابحث عن اسم تلميذ متفوق أو صف دراسي...">
+        </div>
+
+        <div id="publicTopStudentsGrid" class="top-students-grid">
+            <!-- تحميل الأوائل هنا -->
+        </div>
+    </section>
+
+    <!-- 2. واجهة تسجيل دخول / إنشاء حساب المعلم -->
+    <section id="teacherAuthView" class="hidden">
+        <div id="loginFormContainer" class="card" style="max-width: 480px; margin: 0 auto;">
+            <h2 style="margin-bottom: 25px; text-align: center; color: var(--primary); font-size: 1.5rem;">تسجيل دخول المعلم</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>البريد الإلكتروني:</label>
+                    <input type="email" id="email" class="form-control" required placeholder="teacher@school.com">
+                </div>
+                <div class="form-group">
+                    <label>كلمة المرور:</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="password" class="form-control" required placeholder="••••••••">
+                        <button type="button" class="toggle-password-btn" data-target="password">👁️</button>
+                    </div>
+                </div>
+                <div id="loginError" class="hidden" style="color: var(--danger); font-size: 0.85rem; margin-bottom: 15px; text-align: center;"></div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 14px;">دخول لوحة التحكم</button>
+            </form>
+            <p style="text-align: center; margin-top: 20px; font-size: 0.95rem;">
+                ليس لديك حساب معتمد؟ <a href="#" id="toRegisterBtn" style="color: var(--primary); font-weight: bold; text-decoration: none;">إنشاء حساب جديد</a>
+            </p>
+        </div>
+
+        <div id="registerFormContainer" class="card hidden" style="max-width: 480px; margin: 0 auto;">
+            <h2 style="margin-bottom: 25px; text-align: center; color: var(--primary); font-size: 1.5rem;">إنشاء حساب معلم جديد</h2>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label>الاسم الكامل:</label>
+                    <input type="text" id="regFullName" class="form-control" required placeholder="أ. محمد أحمد">
+                </div>
+                <div class="form-group">
+                    <label>كود المعلم المعتمد:</label>
+                    <input type="text" id="regTeacherCode" class="form-control" required placeholder="مثال: TEACHER2026">
+                </div>
+                <div class="form-group">
+                    <label>البريد الإلكتروني:</label>
+                    <input type="email" id="regEmail" class="form-control" required placeholder="teacher@school.com">
+                </div>
+                <div class="form-group">
+                    <label>كلمة المرور:</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="regPassword" class="form-control" required placeholder="••••••••">
+                        <button type="button" class="toggle-password-btn" data-target="regPassword">👁️</button>
+                    </div>
+                </div>
+                <div id="registerError" class="hidden" style="color: var(--danger); font-size: 0.85rem; margin-bottom: 15px; text-align: center;"></div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 14px;">تسجيل الحساب</button>
+            </form>
+            <p style="text-align: center; margin-top: 20px; font-size: 0.95rem;">
+                لديك حساب بالفعل؟ <a href="#" id="toLoginBtn" style="color: var(--primary); font-weight: bold; text-decoration: none;">تسجيل الدخول</a>
+            </p>
+        </div>
+    </section>
+
+    <!-- 3. لوحة تحكم المعلم -->
+    <section id="teacherDashboardView" class="hidden">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px; background: var(--bg-card); padding: 20px; border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow);">
+            <div>
+                <h2 id="welcomeTeacherText" style="color: var(--primary); font-size: 1.4rem;">مرحباً بك، أستاذ</h2>
+                <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 3px;">لديك الصلاحية لإدارة وتحديث لوحة شرف المتفوقين وحذف التعليقات غير اللائقة</p>
+            </div>
+            <button id="logoutBtn" class="btn btn-danger">تسجيل الخروج 🚪</button>
+        </div>
+
+        <div class="card">
+            <h3 style="margin-bottom: 20px; color: var(--primary); font-size: 1.2rem; display: flex; align-items: center; gap: 8px;">
+                ➕ إضافة تلميذ جديد إلى لوحة الشرف
+            </h3>
+            <form id="addTopStudentForm">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px;">
+                    <div class="form-group">
+                        <label>اسم التلميذ:</label>
+                        <input type="text" id="topStudentName" class="form-control" required placeholder="أدخل اسم التلميذ رباعي">
+                    </div>
+
+                    <div class="form-group">
+                        <label>الصف الدراسي:</label>
+                        <input type="text" id="topStudentGrade" class="form-control" required placeholder="مثال: الصف السادس الابتدائي">
+                    </div>
+
+                    <div class="form-group">
+                        <label>النسبة المئوية / المجموع:</label>
+                        <input type="text" id="topStudentScore" class="form-control" required placeholder="مثال: 98.5% أو 295 درجة">
+                    </div>
+
+                    <div class="form-group">
+                        <label>الترتيب / المركز:</label>
+                        <select id="topStudentRank" class="form-control">
+                            <option value="المركز الأول 🥇">المركز الأول 🥇</option>
+                            <option value="المركز الثاني 🥈">المركز الثاني 🥈</option>
+                            <option value="المركز الثالث 🥉">المركز الثالث 🥉</option>
+                            <option value="من الأوائل ⭐">من الأوائل ⭐</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; margin-top: 15px;">
+                    <button type="submit" id="saveTopStudentBtn" class="btn btn-accent" style="padding: 12px 25px;">
+                        🏆 نشر في لوحة الشرف
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="card">
+            <h3 style="color: var(--primary); font-size: 1.2rem; margin-bottom: 20px;">⭐ التلاميذ المتفوقون المسجلون بواسطة حسابك</h3>
+            <div id="teacherTopStudentsGrid" class="top-students-grid">
+                <!-- كروت المتفوقين الخاصة بالمعلم -->
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- Modal -->
+<div id="customModal" class="custom-modal">
+    <div class="modal-body-content">
+        <div id="modalIcon" style="font-size: 3rem; margin-bottom: 12px;">ℹ</div>
+        <h3 id="modalTitle" style="margin-bottom: 10px; font-size: 1.3rem; color: var(--primary);">تنبيه</h3>
+        <p id="modalMessage" style="color: var(--text-muted); margin-bottom: 25px; line-height: 1.6;"></p>
+        <div style="display: flex; gap: 10px; justify-content: center;">
+            <button id="modalConfirmBtn" class="btn btn-primary" style="padding: 10px 25px;">موافق</button>
+            <button id="modalCancelBtn" class="btn btn-secondary hidden" style="padding: 10px 25px;">إلغاء</button>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { 
+    getAuth, 
+    createUserWithEmailAndPassword, 
+    signInWithEmailAndPassword, 
+    signOut, 
+    onAuthStateChanged 
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { 
+    getFirestore, 
+    collection, 
+    doc, 
+    getDoc, 
+    setDoc, 
+    addDoc,
+    deleteDoc,
+    onSnapshot,
+    serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyA4YOFdX_LT4G1YO3MBu2Odf312657g4C4",
+  authDomain: "student-results-2de76.firebaseapp.com",
+  projectId: "student-results-2de76",
+  storageBucket: "student-results-2de76.firebasestorage.app",
+  messagingSenderId: "24575054302",
+  appId: "1:24575054302:web:678ee8ede9ebbab0558d4f"
+};
+
+let app, auth, db;
+try {
+    app = initializeApp(firebaseConfig);
+    auth = getAuth(app);
+    db = getFirestore(app);
+} catch (error) {
+    console.error("خطأ في تهيئة Firebase:", error);
+}
+
+let currentTeacherUser = null;
+let allTopStudentsCache = [];
+let allCommentsCache = [];
+
+function escapeHTML(str) {
+    if (!str) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
+function showCustomAlert(title, message, type = 'success') {
+    return new Promise((resolve) => {
+        const modal = document.getElementById('customModal');
+        const modalIcon = document.getElementById('modalIcon');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalMessage = document.getElementById('modalMessage');
+        const confirmBtn = document.getElementById('modalConfirmBtn');
+        const cancelBtn = document.getElementById('modalCancelBtn');
+
+        if (type === 'success') modalIcon.textContent = '🎉';
+        else if (type === 'error') modalIcon.textContent = '⚠️';
+        else if (type === 'warning') modalIcon.textContent = '💡';
+        else modalIcon.textContent = 'ℹ️';
+
+        modalTitle.textContent = title;
+        modalMessage.textContent = message;
+
+        confirmBtn.className = 'btn btn-primary';
+        confirmBtn.textContent = 'موافق';
+        cancelBtn.classList.add('hidden');
+
+        modal.classList.add('active');
+
+        const handleConfirm = () => {
+            modal.classList.remove('active');
+            confirmBtn.removeEventListener('click', handleConfirm);
+            resolve(true);
+        };
+
+        confirmBtn.addEventListener('click', handleConfirm);
+    });
+}
+
+function showCustomConfirm(title, message) {
+    return new Promise((resolve) => {
+        const modal = document.getElementById('customModal');
+        const modalIcon = document.getElementById('modalIcon');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalMessage = document.getElementById('modalMessage');
+        const confirmBtn = document.getElementById('modalConfirmBtn');
+        const cancelBtn = document.getElementById('modalCancelBtn');
+
+        modalIcon.textContent = '❓';
+        modalTitle.textContent = title;
+        modalMessage.textContent = message;
+
+        confirmBtn.className = 'btn btn-danger';
+        confirmBtn.textContent = 'تأكيد الحذف';
+        cancelBtn.classList.remove('hidden');
+        cancelBtn.textContent = 'إلغاء';
+
+        modal.classList.add('active');
+
+        const handleConfirm = () => {
+            modal.classList.remove('active');
+            cleanup();
+            resolve(true);
+        };
+
+        const handleCancel = () => {
+            modal.classList.remove('active');
+            cleanup();
+            resolve(false);
+        };
+
+        function cleanup() {
+            confirmBtn.removeEventListener('click', handleConfirm);
+            cancelBtn.removeEventListener('click', handleCancel);
+        }
+
+        confirmBtn.addEventListener('click', handleConfirm);
+        cancelBtn.addEventListener('click', handleCancel);
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.toggle-password-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const targetId = this.getAttribute('data-target');
+            const targetInput = document.getElementById(targetId);
+            if (targetInput) {
+                targetInput.type = targetInput.type === 'password' ? 'text' : 'password';
+            }
+        });
+    });
+
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+    themeToggleBtn?.addEventListener('click', () => {
+        document.body.classList.toggle('dark-mode');
+        const isDark = document.body.classList.contains('dark-mode');
+        themeToggleBtn.textContent = isDark ? '☀️' : '🌙';
+    });
+
+    const btnPublicTab = document.getElementById('btnPublicTab');
+    const btnTeacherTab = document.getElementById('btnTeacherTab');
+    const publicView = document.getElementById('publicView');
+    const teacherAuthView = document.getElementById('teacherAuthView');
+    const teacherDashboardView = document.getElementById('teacherDashboardView');
+
+    function switchTab(tab) {
+        btnPublicTab.classList.remove('active');
+        btnTeacherTab.classList.remove('active');
+
+        publicView.classList.add('hidden');
+        teacherAuthView.classList.add('hidden');
+        teacherDashboardView.classList.add('hidden');
+
+        if (tab === 'public') {
+            btnPublicTab.classList.add('active');
+            publicView.classList.remove('hidden');
+        } else if (tab === 'teacher') {
+            btnTeacherTab.classList.add('active');
+            if (currentTeacherUser) {
+                teacherDashboardView.classList.remove('hidden');
+            } else {
+                teacherAuthView.classList.remove('hidden');
+            }
+        }
+    }
+
+    btnPublicTab?.addEventListener('click', () => switchTab('public'));
+    btnTeacherTab?.addEventListener('click', () => switchTab('teacher'));
+
+    document.getElementById('toRegisterBtn')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        document.getElementById('loginFormContainer').classList.add('hidden');
+        document.getElementById('registerFormContainer').classList.remove('hidden');
+    });
+
+    document.getElementById('toLoginBtn')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        document.getElementById('registerFormContainer').classList.add('hidden');
+        document.getElementById('loginFormContainer').classList.remove('hidden');
+    });
+
+    document.getElementById('searchTopStudentsInput')?.addEventListener('input', (e) => {
+        filterAndRenderPublicTopStudents(e.target.value.trim().toLowerCase());
+    });
+});
+
+if (auth) {
+    onAuthStateChanged(auth, async (user) => {
+        const teacherAuthView = document.getElementById('teacherAuthView');
+        const teacherDashboardView = document.getElementById('teacherDashboardView');
+        const btnTeacherTab = document.getElementById('btnTeacherTab');
+
+        if (user) {
+            currentTeacherUser = user;
+            try {
+                const teacherDoc = await getDoc(doc(db, "teachers", user.uid));
+                if (teacherDoc.exists()) {
+                    document.getElementById('welcomeTeacherText').textContent = `مرحباً بك، ${escapeHTML(teacherDoc.data().fullName)}`;
+                }
+            } catch (err) {
+                console.log("تعذر جلب بيانات المعلم.");
+            }
+
+            if (btnTeacherTab.classList.contains('active')) {
+                teacherAuthView.classList.add('hidden');
+                teacherDashboardView.classList.remove('hidden');
+            }
+            renderTeacherTopStudents();
+        } else {
+            currentTeacherUser = null;
+            if (btnTeacherTab.classList.contains('active')) {
+                teacherDashboardView.classList.add('hidden');
+                teacherAuthView.classList.remove('hidden');
+            }
+            renderTeacherTopStudents();
+        }
+        // تحديث العرض فوراً عند تغير حالة تسجيل الدخول ليظهر/يختفي زر حذف التعليق
+        renderViews();
+    });
+}
+
+document.getElementById('loginForm')?.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value.trim();
+    const errorMsg = document.getElementById('loginError');
+
+    try {
+        await signInWithEmailAndPassword(auth, email, password);
+        this.reset();
+        errorMsg.classList.add('hidden');
+    } catch (error) {
+        errorMsg.textContent = "بيانات الدخول غير صحيحة.";
+        errorMsg.classList.remove('hidden');
+    }
+});
+
+document.getElementById('registerForm')?.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const fullName = document.getElementById('regFullName').value.trim();
+    const teacherCode = document.getElementById('regTeacherCode').value.trim().toUpperCase();
+    const email = document.getElementById('regEmail').value.trim();
+    const password = document.getElementById('regPassword').value.trim();
+    const errorMsg = document.getElementById('registerError');
+
+    try {
+        const codeRef = doc(db, "approved_teacher_codes", teacherCode);
+        const codeSnap = await getDoc(codeRef);
+
+        if (!codeSnap.exists() || codeSnap.data().isUsed === true) {
+            errorMsg.textContent = "كود الاعتماد غير صالح أو مستخدم مسبقاً.";
+            errorMsg.classList.remove('hidden');
+            return;
+        }
+
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        await setDoc(doc(db, "teachers", user.uid), {
+            uid: user.uid, fullName, email, teacherCode, createdAt: serverTimestamp()
+        });
+
+        await setDoc(codeRef, { isUsed: true, usedBy: user.uid }, { merge: true });
+
+        await showCustomAlert("تم بنجاح", "تم إنشاء حساب المعلم بنجاح!", "success");
+        this.reset();
+        document.getElementById('loginFormContainer').classList.remove('hidden');
+        document.getElementById('registerFormContainer').classList.add('hidden');
+    } catch (error) {
+        errorMsg.textContent = error.message;
+        errorMsg.classList.remove('hidden');
+    }
+});
+
+document.getElementById('addTopStudentForm')?.addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    if (!currentTeacherUser || !db) {
+        await showCustomAlert("تنبيه", "يجب تسجيل الدخول كمعلم أولاً لتتمكن من الإضافة.", "warning");
+        return;
+    }
+
+    const name = document.getElementById('topStudentName').value.trim();
+    const grade = document.getElementById('topStudentGrade').value.trim();
+    const score = document.getElementById('topStudentScore').value.trim();
+    const rank = document.getElementById('topStudentRank').value;
+    const saveBtn = document.getElementById('saveTopStudentBtn');
+
+    try {
+        saveBtn.disabled = true;
+        saveBtn.textContent = 'جاري الحفظ...';
+
+        await addDoc(collection(db, "topStudents"), {
+            name: name,
+            grade: grade,
+            score: score,
+            rank: rank,
+            teacherUid: currentTeacherUser.uid,
+            createdAt: serverTimestamp()
+        });
+
+        await showCustomAlert("تم بنجاح", `تمت إضافة التلميذ المتفوق (${escapeHTML(name)}) إلى لوحة الشرف!`, "success");
+        this.reset();
+    } catch (error) {
+        console.error("خطأ إضافة التلميذ المتفوق:", error);
+        await showCustomAlert("خطأ", `تعذر حفظ البيانات: ${error.message}`, "error");
+    } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = '🏆 نشر في لوحة الشرف';
+    }
+});
+
+function listenToData() {
+    if (!db) return;
+
+    onSnapshot(collection(db, "topStudents"), (snapshot) => {
+        allTopStudentsCache = [];
+        snapshot.forEach((docSnap) => {
+            allTopStudentsCache.push({ id: docSnap.id, ...docSnap.data() });
+        });
+        allTopStudentsCache.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+        renderViews();
+    });
+
+    onSnapshot(collection(db, "comments"), (snapshot) => {
+        allCommentsCache = [];
+        snapshot.forEach((docSnap) => {
+            allCommentsCache.push({ id: docSnap.id, ...docSnap.data() });
+        });
+        renderViews();
+    });
+}
+
+function renderViews() {
+    const searchQuery = document.getElementById('searchTopStudentsInput')?.value.trim().toLowerCase() || '';
+    filterAndRenderPublicTopStudents(searchQuery);
+    renderTeacherTopStudents();
+}
+
+function buildStudentCardHTML(student) {
+    const isMine = currentTeacherUser && (student.teacherUid === currentTeacherUser.uid);
+    
+    const studentComments = allCommentsCache.filter(c => c.studentId === student.id);
+    studentComments.sort((a, b) => (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0));
+
+    let commentsHTML = '';
+    
+    studentComments.forEach(c => {
+        // زر حذف التعليق يظهر فقط إذا كان المعلم مسجلاً للدخول
+        const deleteCommentBtn = currentTeacherUser 
+            ? `<button class="delete-comment-btn" data-comment-id="${c.id}" title="حذف التعليق">حذف</button>` 
+            : '';
+
+        commentsHTML += `
+            <div class="comment-item">
+                <div class="comment-header-row">
+                    <span class="comment-author">👤 ${escapeHTML(c.author)}</span>
+                    ${deleteCommentBtn}
+                </div>
+                <div style="color: var(--text-main);">${escapeHTML(c.text)}</div>
+            </div>
+        `;
+    });
+
+    if (studentComments.length === 0) {
+        commentsHTML = '<div style="font-size: 0.8rem; color: var(--text-muted); text-align:center; padding: 5px;">لا توجد تعليقات بعد. كن أول المهنئين!</div>';
+    }
+
+    return `
+        <div class="top-card">
+            ${isMine ? `<button class="delete-top-btn" data-id="${student.id}" title="حذف هذا التلميذ">✕</button>` : ''}
+            <div>
+                <span class="rank-badge">${escapeHTML(student.rank)}</span>
+                <div class="student-avatar">🎓</div>
+                <div class="student-name">${escapeHTML(student.name)}</div>
+                <div class="student-grade">${escapeHTML(student.grade)}</div>
+            </div>
+            <div>
+                <div class="student-score">النتيجة: ${escapeHTML(student.score)}</div>
+                
+                <!-- قسم التعليقات -->
+                <div class="comments-section">
+                    <div class="comments-list">${commentsHTML}</div>
+                    <form class="add-comment-form" data-student-id="${student.id}">
+                        <input type="text" placeholder="اكتب اسمك الكريم..." required class="comment-author-input">
+                        <input type="text" placeholder="اكتب عبارة تهنئة..." required class="comment-text-input">
+                        <button type="submit">إرسال التهنئة</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function filterAndRenderPublicTopStudents(queryText = '') {
+    const publicGrid = document.getElementById('publicTopStudentsGrid');
+    if (!publicGrid) return;
+
+    const filtered = allTopStudentsCache.filter(student => 
+        (student.name && student.name.toLowerCase().includes(queryText)) || 
+        (student.grade && student.grade.toLowerCase().includes(queryText))
+    );
+
+    publicGrid.innerHTML = '';
+
+    if (filtered.length === 0) {
+        publicGrid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 30px; background: var(--bg-card); border-radius: var(--radius);">لا توجد نتائج مطابقة للبحث حالياً.</p>';
+        return;
+    }
+
+    filtered.forEach(student => {
+        publicGrid.innerHTML += buildStudentCardHTML(student);
+    });
+
+    attachCardEvents(publicGrid);
+}
+
+function renderTeacherTopStudents() {
+    const teacherGrid = document.getElementById('teacherTopStudentsGrid');
+    if (!teacherGrid) return;
+
+    if (!currentTeacherUser) {
+        teacherGrid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 20px;">يرجى تسجيل الدخول لعرض المتفوقين المضافين بواسطتك.</p>';
+        return;
+    }
+
+    const myStudents = allTopStudentsCache.filter(student => student.teacherUid === currentTeacherUser.uid);
+    teacherGrid.innerHTML = '';
+
+    if (myStudents.length === 0) {
+        teacherGrid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 20px;">لم تقم بإضافة أي تلاميذ متفوقين حتى الآن.</p>';
+        return;
+    }
+
+    myStudents.forEach(student => {
+        teacherGrid.innerHTML += buildStudentCardHTML(student);
+    });
+
+    attachCardEvents(teacherGrid);
+}
+
+function attachCardEvents(container) {
+    // تفعيل زر حذف التلميذ
+    container.querySelectorAll('.delete-top-btn').forEach(btn => {
+        btn.addEventListener('click', async function() {
+            const docId = this.getAttribute('data-id');
+            if (await showCustomConfirm("حذف تلميذ", "هل أنت متأكد من حذف هذا التلميذ من لوحة الشرف؟")) {
+                try {
+                    await deleteDoc(doc(db, "topStudents", docId));
+                    await showCustomAlert("تم الحذف", "تم حذف التلميذ بنجاح.", "success");
+                } catch (err) {
+                    await showCustomAlert("خطأ", `تعذر الحذف: ${err.message}`, "error");
+                }
+            }
+        });
+    });
+
+    // تفعيل زر حذف التعليق للمعلم
+    container.querySelectorAll('.delete-comment-btn').forEach(btn => {
+        btn.addEventListener('click', async function() {
+            const commentId = this.getAttribute('data-comment-id');
+            if (await showCustomConfirm("حذف تعليق", "هل أنت متأكد من رغبتك في حذف هذا التعليق؟")) {
+                try {
+                    await deleteDoc(doc(db, "comments", commentId));
+                } catch (err) {
+                    console.error("خطأ في حذف التعليق:", err);
+                }
+            }
+        });
+    });
+
+    // تفعيل نموذج إضافة التعليق
+    container.querySelectorAll('.add-comment-form').forEach(form => {
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const studentId = this.getAttribute('data-student-id');
+            const authorInput = this.querySelector('.comment-author-input');
+            const textInput = this.querySelector('.comment-text-input');
+            
+            const author = authorInput.value.trim();
+            const text = textInput.value.trim();
+
+            if (!author || !text) return;
+
+            const submitBtn = this.querySelector('button');
+            try {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'جاري الإرسال...';
+
+                await addDoc(collection(db, "comments"), {
+                    studentId: studentId,
+                    author: author,
+                    text: text,
+                    createdAt: serverTimestamp()
+                });
+
+                authorInput.value = '';
+                textInput.value = '';
+            } catch (err) {
+                console.error("خطأ إضافة التعليق:", err);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'إرسال التهنئة';
+            }
+        });
+    });
+}
+
+document.getElementById('logoutBtn')?.addEventListener('click', () => {
+    if (auth) signOut(auth);
+});
+
+listenToData();
+</script>
+
+</body>
+</html>
 
