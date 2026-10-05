@@ -95,9 +95,9 @@
             <button id="logoutBtn" class="btn btn-danger" style="padding: 8px 16px; font-size: 13px;">تسجيل الخروج</button>
         </div>
 
-        <!-- نموذج إدخال طالب جديد -->
+        <!-- نموذج إدخال وتعديل طالب -->
         <form id="addGradeForm">
-            <h4>رصد درجات طالب جديد</h4>
+            <h4 id="formTitle">رصد درجات طالب جديد</h4>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px;">
                 <div class="form-group" style="margin-bottom:0;">
                     <label>اسم الطالب الكامل</label>
@@ -133,7 +133,10 @@
                 </div>
             </div>
 
-            <button type="submit" class="btn btn-primary" style="width: 100%;">حفظ نتيجة الطالب</button>
+            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                <button type="submit" id="saveGradeBtn" class="btn btn-primary" style="flex: 1;">حفظ نتيجة الطالب</button>
+                <button type="button" id="cancelEditBtn" class="btn btn-secondary hidden" style="background-color: #6c757d; color: white;">إلغاء التعديل</button>
+            </div>
         </form>
 
         <hr style="margin: 25px 0; border: none; border-top: 1px solid var(--border);">
