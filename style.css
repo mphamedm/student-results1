@@ -42,7 +42,7 @@ body {
 }
 
 .container {
-    max-width: 900px;
+    max-width: 1000px;
     margin: 0 auto;
 }
 
@@ -165,33 +165,120 @@ body {
     margin: 15px 0;
 }
 
+/* =========================================================
+   تنسيقات الإحصائيات وبطاقات ملخص الجدول (Dashboard Stats)
+   ========================================================= */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+    margin: 15px 0 25px 0;
+}
+
+.stat-card {
+    background: var(--input-bg);
+    border: 1px solid var(--border);
+    padding: 16px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+}
+
+.stat-label {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+    font-weight: 600;
+}
+
+.stat-value {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--primary);
+}
+
+.stat-card.stat-success .stat-value { color: var(--success); }
+.stat-card.stat-danger .stat-value { color: var(--danger); }
+.stat-card.stat-info .stat-value { color: #f39c12; }
+
+/* شريط البحث والفلترة */
+.table-toolbar {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+}
+
+.table-toolbar .search-box {
+    flex: 2;
+    min-width: 220px;
+}
+
+.table-toolbar .filter-box {
+    flex: 1;
+    min-width: 150px;
+}
+
+/* تنسيق الجدول المحسن */
 .table-responsive {
     overflow-x: auto;
+    border-radius: 10px;
+    border: 1px solid var(--border);
 }
 
-table {
+.styled-table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 15px;
+    background-color: var(--card-bg);
 }
 
-th, td {
-    padding: 12px;
+.styled-table th, .styled-table td {
+    padding: 14px 16px;
     text-align: right;
     border-bottom: 1px solid var(--border);
     font-size: 14px;
+    vertical-align: middle;
 }
 
-th {
+.styled-table th {
     background-color: var(--primary-light);
     color: var(--text);
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.styled-table tbody tr:hover {
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+body.dark-mode .styled-table tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.02);
+}
+
+/* وسوم درجات المواد */
+.subjects-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    max-width: 320px;
+}
+
+.subject-chip {
+    background: var(--primary-light);
+    color: var(--text);
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    border: 1px solid var(--border);
+    white-space: nowrap;
 }
 
 .badge {
-    padding: 4px 10px;
+    padding: 6px 12px;
     border-radius: 12px;
     font-size: 12px;
     font-weight: 700;
+    display: inline-block;
 }
 
 .badge-pass {
@@ -214,11 +301,6 @@ th {
 
 .result-box.fail {
     border-color: var(--danger);
-}
-
-.result-grid {
-    display: grid;
-    gap: 15px;
 }
 
 .error-msg {
