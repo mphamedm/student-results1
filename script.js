@@ -16,13 +16,11 @@ import {
     doc, 
     getDoc, 
     setDoc, 
-    deleteDoc, 
-    query, 
-    where 
+    deleteDoc
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 // =========================================================
-// 2. إعدادات Firebase الخاصة بالمشروع
+// 2. إعدادات Firebase
 // =========================================================
 const firebaseConfig = {
   apiKey: "AIzaSyA4YOFdX_LT4G1YO3MBu2Odf312657g4C4",
@@ -59,7 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
     themeToggleBtn?.addEventListener('click', () => {
         document.body.classList.toggle('dark-mode');
         const isDark = document.body.classList.contains('dark-mode');
-        themeToggleBtn.textContent = isDark ? '☀️️' : '🌙';
+        themeToggleBtn.textContent = isDark ? '☀️' : '🌙';
         localStorage.setItem('theme', isDark ? 'dark' : 'light');
     });
 
@@ -148,77 +146,28 @@ if (auth) {
 }
 
 // =========================================================
-// 5. استعلام الطالب عن النتيجة (عرض أفقي بصف واحد)
+// 5. استعلام الطالب (البحث برقم الجلوس فقط)
 // =========================================================
 document.getElementById('studentSearchForm')?.addEventListener('submit', async function(e) {
     e.preventDefault();
-    const seatNo = document.getElementById('searchSeatNumber').value.trim();
+    const seatNumber = document.getElementById('searchSeatNumber').value.trim();
     const resultBox = document.getElementById('studentResultBox');
 
     resultBox.className = 'result-box';
-    resultBox.innerHTML = '<div style="text-align:center;">جاري البحث في قاعدة البيانات...</div>';
+    resultBox.innerHTML = '<div style="text-align:center;">جاري البحث برقم الجلوس...</div>';
     resultBox.classList.remove('hidden');
 
     try {
-        const studentDocRef = doc(db, "grades", seatNo);
+        // البحث المباشر برقم الجلوس فقط
+        const studentDocRef = doc(db, "grades", seatNumber);
         const studentSnap = await getDoc(studentDocRef);
 
         if (studentSnap.exists()) {
-            const student = studentSnap.data();
-            const isPass = student.status === 'ناجح';
-            const statusClass = isPass ? 'pass' : 'fail';
-            const badgeClass = isPass ? 'badge-pass' : 'badge-fail';
-
-            let tableHeaders = '';
-            let tableRows = '';
-
-            for (const [subject, score] of Object.entries(student.subjects)) {
-                tableHeaders += `<th>${subject}</th>`;
-                tableRows += `<td><strong>${score}</strong></td>`;
-            }
-
-            tableHeaders += `<th style="background:var(--primary-light);">المجموع الكلي</th>`;
-            tableRows += `<td style="font-weight:bold; color:var(--primary); background:var(--primary-light);">${student.totalScore} / ${student.maxScore}</td>`;
-
-            resultBox.className = `result-box ${statusClass}`;
-            resultBox.innerHTML = `
-                <div style="margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px; display:flex; justify-content:space-between; align-items:center;">
-                    <div>
-                        <h3 style="margin-bottom: 4px;">نتيجة الطالب: ${student.studentName}</h3>
-                        <span style="color: var(--text-muted); font-size: 14px;">رقم الجلوس: <strong>${student.seatNumber}</strong></span>
-                    </div>
-                    <span class="badge ${badgeClass}" style="font-size: 15px; padding: 8px 16px;">${student.status}</span>
-                </div>
-
-                <div class="table-responsive" style="margin-bottom: 20px;">
-                    <table>
-                        <thead>
-                            <tr>${tableHeaders}</tr>
-                        </thead>
-                        <tbody>
-                            <tr>${tableRows}</tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="result-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); text-align: center;">
-                    <div class="result-item">
-                        <span>المجموع الكلي</span>
-                        <strong style="font-size: 18px; color: var(--primary);">${student.totalScore} من ${student.maxScore} (${student.percentage.toFixed(1)}%)</strong>
-                    </div>
-                    <div class="result-item">
-                        <span>تقدير الطالب العام</span>
-                        <strong style="font-size: 18px;">${student.overallGrade}</strong>
-                    </div>
-                    <div class="result-item">
-                        <span>النتيجة النهائية</span>
-                        <strong style="font-size: 18px; color: ${isPass ? 'var(--success)' : 'var(--danger)'};">${student.status}</strong>
-                    </div>
-                </div>
-            `;
+            const studentData = studentSnap.data();
+            renderStudentResult(studentData, resultBox);
         } else {
             resultBox.className = 'result-box fail';
-            resultBox.innerHTML = `<div style="text-align: center; color: var(--danger); font-weight: 700;">عذراً، لم يتم العثور على نتائج برقم الجلوس: (${seatNo})</div>`;
+            resultBox.innerHTML = `<div style="text-align: center; color: var(--danger); font-weight: 700;">عذراً، لم يتم العثور على نتيجة لرقم الجلوس: (${seatNumber})</div>`;
         }
     } catch (error) {
         console.error("خطأ أثناء البحث:", error);
@@ -226,6 +175,61 @@ document.getElementById('studentSearchForm')?.addEventListener('submit', async f
         resultBox.innerHTML = `<div style="text-align:center; color:var(--danger);">حدث خطأ أثناء الاتصال بقاعدة البيانات.</div>`;
     }
 });
+
+// دالة عرض نتيجة الطالب
+function renderStudentResult(student, resultBox) {
+    const isPass = student.status === 'ناجح';
+    const statusClass = isPass ? 'pass' : 'fail';
+    const badgeClass = isPass ? 'badge-pass' : 'badge-fail';
+
+    let tableHeaders = '';
+    let tableRows = '';
+
+    for (const [subject, score] of Object.entries(student.subjects || {})) {
+        tableHeaders += `<th>${subject}</th>`;
+        tableRows += `<td><strong>${score}</strong></td>`;
+    }
+
+    tableHeaders += `<th style="background:var(--primary-light);">المجموع الكلي</th>`;
+    tableRows += `<td style="font-weight:bold; color:var(--primary); background:var(--primary-light);">${student.totalScore} / ${student.maxScore}</td>`;
+
+    resultBox.className = `result-box ${statusClass}`;
+    resultBox.innerHTML = `
+        <div style="margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+            <div>
+                <h3 style="margin-bottom: 4px;">اسم الطالب: ${student.studentName}</h3>
+                <span style="color: var(--text-muted); font-size: 14px;">رقم الجلوس: <strong>${student.seatNumber}</strong></span>
+            </div>
+            <span class="badge ${badgeClass}" style="font-size: 15px; padding: 8px 16px;">${student.status}</span>
+        </div>
+
+        <div class="table-responsive" style="margin-bottom: 20px;">
+            <table>
+                <thead>
+                    <tr>${tableHeaders}</tr>
+                </thead>
+                <tbody>
+                    <tr>${tableRows}</tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="result-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); text-align: center;">
+            <div class="result-item">
+                <span>المجموع الكلي</span>
+                <strong style="font-size: 18px; color: var(--primary);">${student.totalScore} من ${student.maxScore} (${student.percentage ? student.percentage.toFixed(1) : 0}%)</strong>
+            </div>
+            <div class="result-item">
+                <span>تقدير الطالب العام</span>
+                <strong style="font-size: 18px;">${student.overallGrade}</strong>
+            </div>
+            <div class="result-item">
+                <span>النتيجة النهائية</span>
+                <strong style="font-size: 18px; color: ${isPass ? 'var(--success)' : 'var(--danger)'};">${student.status}</strong>
+            </div>
+        </div>
+    `;
+}
 
 // =========================================================
 // 6. تسجيل دخول المعلم
@@ -293,14 +297,14 @@ document.getElementById('registerForm')?.addEventListener('submit', async functi
 });
 
 // =========================================================
-// 8. حفظ سجل الطالب منفصلاً برقم الجلوس
+// 8. رصد نتائج الطالب
 // =========================================================
 document.getElementById('addGradeForm')?.addEventListener('submit', async function(e) {
     e.preventDefault();
     if (!currentTeacherUser || !db) return;
 
-    const seatNumber = document.getElementById('seatNumber').value.trim();
     const studentName = document.getElementById('studentName').value.trim();
+    const seatNumber = document.getElementById('seatNumber').value.trim();
     const subjectInputs = document.querySelectorAll('.subject-input');
 
     let subjects = {};
@@ -369,7 +373,7 @@ document.getElementById('addGradeForm')?.addEventListener('submit', async functi
 });
 
 // =========================================================
-// 9. عرض قائمة الطلاب المعزولة في لوحة المعلم
+// 9. عرض جدول "النتائج المضافة بواسطة المعلم"
 // =========================================================
 async function loadTeacherGrades() {
     if (!currentTeacherUser || !db) return;
@@ -377,36 +381,40 @@ async function loadTeacherGrades() {
     tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">جاري تحميل البيانات...</td></tr>';
 
     try {
-        const q = query(collection(db, "grades"), where("teacherUid", "==", currentTeacherUser.uid));
-        const querySnapshot = await getDocs(q);
+        const querySnapshot = await getDocs(collection(db, "grades"));
 
         tbody.innerHTML = '';
-        if (querySnapshot.empty) {
-            tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">لا يوجد طلاب مضافون حتى الآن</td></tr>';
-            return;
-        }
+        let count = 0;
 
         querySnapshot.forEach((docSnap) => {
             const student = docSnap.data();
-            const docId = docSnap.id;
-            const tr = document.createElement('tr');
-            const isPass = student.status === 'ناجح';
 
-            let subjectsSummary = Object.entries(student.subjects)
-                .map(([subj, score]) => `${subj}: <strong>${score}</strong>`)
-                .join(' | ');
+            if (student.teacherUid === currentTeacherUser.uid) {
+                count++;
+                const docId = docSnap.id;
+                const tr = document.createElement('tr');
+                const isPass = student.status === 'ناجح';
 
-            tr.innerHTML = `
-                <td><strong>${student.seatNumber}</strong></td>
-                <td><strong>${student.studentName}</strong></td>
-                <td style="font-size:13px; color: var(--text-muted);">${subjectsSummary}</td>
-                <td><strong style="color:var(--primary);">${student.totalScore} / ${student.maxScore}</strong></td>
-                <td>${student.overallGrade}</td>
-                <td><span class="badge ${isPass ? 'badge-pass' : 'badge-fail'}">${student.status}</span></td>
-                <td><button class="btn btn-danger delete-btn" data-id="${docId}" style="padding: 6px 12px; font-size: 12px;">حذف الطالب</button></td>
-            `;
-            tbody.appendChild(tr);
+                let subjectsSummary = Object.entries(student.subjects || {})
+                    .map(([subj, score]) => `${subj}: <strong>${score}</strong>`)
+                    .join(' | ');
+
+                tr.innerHTML = `
+                    <td><strong style="color:var(--primary);">${student.studentName}</strong></td>
+                    <td><strong>${student.seatNumber}</strong></td>
+                    <td style="font-size:13px; color: var(--text-muted);">${subjectsSummary}</td>
+                    <td><strong>${student.totalScore} / ${student.maxScore}</strong></td>
+                    <td>${student.overallGrade}</td>
+                    <td><span class="badge ${isPass ? 'badge-pass' : 'badge-fail'}">${student.status}</span></td>
+                    <td><button class="btn btn-danger delete-btn" data-id="${docId}" style="padding: 6px 12px; font-size: 12px;">حذف</button></td>
+                `;
+                tbody.appendChild(tr);
+            }
         });
+
+        if (count === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">لا يوجد طلاب مضافون حتى الآن بواسطة المعلم</td></tr>';
+        }
 
         document.querySelectorAll('.delete-btn').forEach(btn => {
             btn.addEventListener('click', async function() {
@@ -417,6 +425,7 @@ async function loadTeacherGrades() {
                 }
             });
         });
+
     } catch (error) {
         console.error("خطأ التحميل:", error);
         tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:red;">خطأ في تحميل البيانات</td></tr>';
