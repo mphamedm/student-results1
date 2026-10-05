@@ -9,6 +9,48 @@
   <!-- ربط ملفات التنسيق -->
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="index.css">
+  <style>
+    /* تنسيق إضافي للأزرار لتظهر بجانب بعضها بشكل جميل ومتناسق */
+    .cta-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 20px;
+    }
+    .btn-results, .btn-honor {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 12px 20px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      text-decoration: none;
+      border: none;
+      transition: transform 0.2s, background 0.2s;
+    }
+    .btn-results {
+      background: #1e3c72;
+      color: #fff;
+    }
+    .btn-results:hover {
+      background: #122548;
+    }
+    .btn-honor {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      color: #fff;
+    }
+    .btn-honor:hover {
+      opacity: 0.9;
+    }
+    .btn-results svg, .btn-honor svg {
+      width: 20px;
+      height: 20px;
+      fill: currentColor;
+    }
+  </style>
 </head>
 <body>
 
@@ -69,6 +111,14 @@
       </div>
 
       <div class="cta-container">
+        <!-- زر لوحة الشرف وأوائل الطلبة الجديد -->
+        <button class="btn-honor" type="button" onclick="window.location.href='top-students.html';">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+          </svg>
+          لوحة الشرف وأوائل الطلبة 🏆
+        </button>
+
         <button class="btn-results" type="button" onclick="window.location.href='exams.html';">
           <svg viewBox="0 0 24 24">
             <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
