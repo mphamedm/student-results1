@@ -2,7 +2,7 @@
     --bg-color: #f4f6f9;
     --card-bg: #ffffff;
     --text: #1f2937;
-    --text-muted: #6b7280;
+    --text-muted: #9ca3af;
     --primary: #2563eb;
     --primary-light: #eff6ff;
     --primary-hover: #1d4ed8;
@@ -10,6 +10,7 @@
     --success: #10b981;
     --border: #e5e7eb;
     --input-bg: #ffffff;
+    --icon-color: #9ca3af;
 }
 
 body.dark-mode {
@@ -24,6 +25,7 @@ body.dark-mode {
     --success: #34d399;
     --border: #334155;
     --input-bg: #0f172a;
+    --icon-color: #94a3b8;
 }
 
 * {
@@ -104,20 +106,63 @@ body {
 
 .form-group label {
     display: block;
-    margin-bottom: 4px;
+    margin-bottom: 6px;
     font-size: 13px;
     font-weight: 600;
 }
 
 .form-control {
     width: 100%;
-    padding: 10px;
+    padding: 12px 14px;
     border: 1px solid var(--border);
     background-color: var(--input-bg);
     color: var(--text);
-    border-radius: 8px;
+    border-radius: 10px;
     font-size: 14px;
     outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.form-control:focus {
+    border-color: var(--primary);
+}
+
+.password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.password-wrapper .form-control {
+    padding-left: 45px;
+}
+
+.toggle-password-btn {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    color: var(--icon-color);
+    transition: color 0.2s ease;
+}
+
+.toggle-password-btn:hover {
+    color: var(--text);
+}
+
+.toggle-password-btn svg {
+    width: 20px;
+    height: 20px;
+    stroke: currentColor;
 }
 
 .btn {
@@ -140,7 +185,6 @@ body {
     margin: 12px 0;
 }
 
-/* الإحصائيات والشريط العلوى */
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -182,7 +226,6 @@ body {
 .table-toolbar .search-box { flex: 2; }
 .table-toolbar .filter-box { flex: 1; }
 
-/* تنسيق الجدول القياسي للشاشات الكبيرة */
 .table-responsive { width: 100%; }
 
 .styled-table {
@@ -231,11 +274,93 @@ body {
 .badge-pass { background-color: rgba(16, 185, 129, 0.15); color: var(--success); }
 .badge-fail { background-color: rgba(239, 68, 68, 0.15); color: var(--danger); }
 
-/* =========================================================
-   التجاوب الخاص بشاشات الجوال (Mobile Responsiveness)
-   ========================================================= */
+.student-result-card {
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 2px dashed var(--border);
+}
+
+.result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--input-bg);
+    padding: 12px 16px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    margin-bottom: 15px;
+}
+
+.result-header h3 {
+    font-size: 16px;
+    margin-bottom: 2px;
+}
+
+.result-header span {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.student-grades-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.student-grade-item {
+    background: var(--input-bg);
+    border: 1px solid var(--border);
+    padding: 10px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.student-grade-item .sub-title {
+    font-size: 12px;
+    color: var(--text-muted);
+    display: block;
+    margin-bottom: 4px;
+    font-weight: 600;
+}
+
+.student-grade-item .sub-score {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--primary);
+}
+
+.result-summary-bar {
+    display: flex;
+    justify-content: space-around;
+    background: var(--primary);
+    color: #ffffff;
+    padding: 12px;
+    border-radius: 10px;
+    text-align: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.summary-box-item span {
+    display: block;
+    font-size: 11px;
+    opacity: 0.9;
+}
+
+.summary-box-item strong {
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.error-msg {
+    color: var(--danger);
+    font-size: 13px;
+    margin-top: 10px;
+    text-align: center;
+}
+
 @media (max-width: 768px) {
-    /* تقسيم الإحصائيات لشبكة 2x2 على الجوال */
     .stats-grid {
         grid-template-columns: repeat(2, 1fr);
     }
@@ -244,10 +369,9 @@ body {
         flex-direction: column;
     }
 
-    /* تحويل الجدول إلى كروت منظمّة تماماً لسهولة القراءة */
     .styled-table header, 
     .styled-table thead {
-        display: none; /* إخفاء الهيدر التقليدي */
+        display: none;
     }
 
     .styled-table, 
@@ -283,7 +407,6 @@ body {
         padding-top: 10px;
     }
 
-    /* إضافة عنوان الخلية جانباً على الجوال */
     .styled-table td::before {
         content: attr(data-label);
         font-weight: 700;
@@ -294,7 +417,6 @@ body {
     }
 }
 
-/* Modals */
 .modal-overlay {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
