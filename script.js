@@ -16,7 +16,9 @@ import {
     doc, 
     getDoc, 
     setDoc, 
-    deleteDoc
+    deleteDoc,
+    query,
+    where
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 // =========================================================
@@ -42,7 +44,43 @@ try {
 
 let currentTeacherUser = null;
 let isEditingMode = false;
-let teacherStudentsCache = []; // التخزين المؤقت للطلاب لغرض الفلترة السريعة
+let teacherStudentsCache = [];
+
+// قائمة المواد الافتراضية الخارجة عن المجموع للتوافقية
+const NON_TOTAL_SUBJECT_NAMES = [
+    'الأنشطة الرياضية', 
+    'التربية الفنية', 
+    'التربية الفنية (الرسم)', 
+    'الكمبيوتر', 
+    'الحاسب الآلي'
+];
+
+// تنقية النصوص للحماية من ثغرات XSS
+function escapeHTML(str) {
+    if (!str) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
+// دالة لمعرفة هل المادة خارج المجموع الكلي
+function isNonTotalSubject(subjectName, subjectData) {
+    if (typeof subjectData === 'object' && subjectData !== null && subjectData.isNonTotal !== undefined) {
+        return Boolean(subjectData.isNonTotal);
+    }
+    return NON_TOTAL_SUBJECT_NAMES.includes(subjectName.trim());
+}
+
+// دالة مساعدة لاستخراج درجة المادة
+function getSubjectScore(subjectData) {
+    if (typeof subjectData === 'object' && subjectData !== null && subjectData.score !== undefined) {
+        return parseFloat(subjectData.score) || 0;
+    }
+    return parseFloat(subjectData) || 0;
+}
 
 // =========================================================
 // 3. نظام النوافذ المنبثقة الاحترافية (Custom Modals)
@@ -56,15 +94,10 @@ function showCustomAlert(title, message, type = 'success') {
         const confirmBtn = document.getElementById('modalConfirmBtn');
         const cancelBtn = document.getElementById('modalCancelBtn');
 
-        if (type === 'success') {
-            modalIcon.textContent = '🎉';
-        } else if (type === 'error') {
-            modalIcon.textContent = '⚠️';
-        } else if (type === 'warning') {
-            modalIcon.textContent = '💡';
-        } else {
-            modalIcon.textContent = 'ℹ️';
-        }
+        if (type === 'success') modalIcon.textContent = '🎉';
+        else if (type === 'error') modalIcon.textContent = '⚠️';
+        else if (type === 'warning') modalIcon.textContent = '💡';
+        else modalIcon.textContent = 'ℹ️';
 
         modalTitle.textContent = title;
         modalMessage.textContent = message;
@@ -81,7 +114,7 @@ function showCustomAlert(title, message, type = 'success') {
             resolve(true);
         };
 
-        confirmBtn.onclick = handleConfirm;
+        confirmBtn.addEventListener('click', handleConfirm);
     });
 }
 
@@ -122,15 +155,42 @@ function showCustomConfirm(title, message) {
             cancelBtn.removeEventListener('click', handleCancel);
         }
 
-        confirmBtn.onclick = handleConfirm;
-        cancelBtn.onclick = handleCancel;
+        confirmBtn.addEventListener('click', handleConfirm);
+        cancelBtn.addEventListener('click', handleCancel);
     });
 }
 
 // =========================================================
-// 4. إدارة الوضع الليلي والتبويبات
+// 4. إدارة الوضع الليلي والتبويبات وإظهار/إخفاء كلمة المرور
 // =========================================================
+const SVG_EYE_SHOW = `
+    <svg class="eye-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+        <circle cx="12" cy="12" r="3"></circle>
+    </svg>
+`;
+
+const SVG_EYE_HIDE = `
+    <svg class="eye-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+        <line x1="1" y1="1" x2="23" y2="23"></line>
+    </svg>
+`;
+
 document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.toggle-password-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const targetId = this.getAttribute('data-target');
+            const targetInput = document.getElementById(targetId);
+
+            if (targetInput) {
+                const isPassword = targetInput.type === 'password';
+                targetInput.type = isPassword ? 'text' : 'password';
+                this.innerHTML = isPassword ? SVG_EYE_SHOW : SVG_EYE_HIDE;
+            }
+        });
+    });
+
     const themeToggleBtn = document.getElementById('themeToggleBtn');
     const savedTheme = localStorage.getItem('theme');
 
@@ -196,7 +256,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('cancelEditBtn')?.addEventListener('click', resetGradeForm);
 
-    // أحداث البحث والفلترة السريعة
     document.getElementById('searchTeacherTable')?.addEventListener('input', filterAndRenderTeacherTable);
     document.getElementById('filterStatus')?.addEventListener('change', filterAndRenderTeacherTable);
 });
@@ -215,7 +274,7 @@ if (auth) {
             try {
                 const teacherDoc = await getDoc(doc(db, "teachers", user.uid));
                 if (teacherDoc.exists()) {
-                    document.getElementById('welcomeTeacherText').textContent = `مرحباً بك، ${teacherDoc.data().fullName}`;
+                    document.getElementById('welcomeTeacherText').textContent = `مرحباً بك، ${escapeHTML(teacherDoc.data().fullName)}`;
                 }
             } catch (err) {
                 console.log("تعذر جلب بيانات المعلم.");
@@ -237,87 +296,123 @@ if (auth) {
 }
 
 // =========================================================
-// 6. استعلام الطالب (برقم الجلوس فقط)
+// 6. استعلام الطالب عرض النتيجة وتقسيم المواد
 // =========================================================
 document.getElementById('studentSearchForm')?.addEventListener('submit', async function(e) {
     e.preventDefault();
     const seatNumber = document.getElementById('searchSeatNumber').value.trim();
+    const studentName = document.getElementById('searchStudentName').value.trim();
     const resultBox = document.getElementById('studentResultBox');
 
-    resultBox.className = 'result-box';
-    resultBox.innerHTML = '<div style="text-align:center;">جاري البحث برقم الجلوس...</div>';
+    if (!seatNumber || !studentName) {
+        await showCustomAlert("تنبيه", "يرجى إدخال رقم الجلوس واسم الطالب معاً للبحث.", "warning");
+        return;
+    }
+
+    resultBox.innerHTML = '<div style="text-align:center; padding: 15px;">جاري التحقق والبحث عن النتيجة...</div>';
     resultBox.classList.remove('hidden');
 
     try {
-        const studentDocRef = doc(db, "grades", seatNumber);
-        const studentSnap = await getDoc(studentDocRef);
+        const q = query(
+            collection(db, "grades"),
+            where("seatNumber", "==", seatNumber),
+            where("studentName", "==", studentName)
+        );
 
-        if (studentSnap.exists()) {
-            const studentData = studentSnap.data();
-            renderStudentResult(studentData, resultBox);
+        const querySnapshot = await getDocs(q);
+        resultBox.innerHTML = '';
+
+        if (!querySnapshot.empty) {
+            querySnapshot.forEach((docSnap) => {
+                renderStudentResult(docSnap.data(), resultBox);
+            });
         } else {
-            resultBox.className = 'result-box fail';
-            resultBox.innerHTML = `<div style="text-align: center; color: var(--danger); font-weight: 700;">عذراً، لم يتم العثور على نتيجة لرقم الجلوس: (${seatNumber})</div>`;
+            resultBox.innerHTML = `
+                <div style="text-align: center; color: var(--danger); font-weight: 700; padding: 15px;">
+                    عذراً، لم يتم العثور على نتيجة تطابق رقم الجلوس: (${escapeHTML(seatNumber)}) مع الاسم: (${escapeHTML(studentName)})
+                </div>
+            `;
         }
     } catch (error) {
         console.error("خطأ أثناء البحث:", error);
-        resultBox.className = 'result-box fail';
-        resultBox.innerHTML = `<div style="text-align:center; color:var(--danger);">حدث خطأ أثناء الاتصال بقاعدة البيانات.</div>`;
+        resultBox.innerHTML = `<div style="text-align:center; color:var(--danger); padding: 15px;">حدث خطأ أثناء الاتصال بقاعدة البيانات.</div>`;
     }
 });
 
 function renderStudentResult(student, resultBox) {
     const isPass = student.status === 'ناجح';
-    const statusClass = isPass ? 'pass' : 'fail';
     const badgeClass = isPass ? 'badge-pass' : 'badge-fail';
 
-    let tableHeaders = '';
-    let tableRows = '';
+    let mainSubjectsHTML = '';
+    let nonTotalSubjectsHTML = '';
 
-    for (const [subject, score] of Object.entries(student.subjects || {})) {
-        tableHeaders += `<th>${subject}</th>`;
-        tableRows += `<td><strong>${score}</strong></td>`;
-    }
+    Object.entries(student.subjects || {}).forEach(([subject, val]) => {
+        const score = getSubjectScore(val);
+        const nonTotal = isNonTotalSubject(subject, val);
 
-    tableHeaders += `<th style="background:var(--primary-light);">المجموع الكلي</th>`;
-    tableRows += `<td style="font-weight:bold; color:var(--primary); background:var(--primary-light);">${student.totalScore} / ${student.maxScore}</td>`;
+        const itemHTML = `
+            <div class="student-grade-item">
+                <span class="sub-title">${escapeHTML(subject)}</span>
+                <span class="sub-score">${score}</span>
+            </div>
+        `;
 
-    resultBox.className = `result-box ${statusClass}`;
-    resultBox.innerHTML = `
-        <div style="margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+        if (nonTotal) {
+            nonTotalSubjectsHTML += itemHTML;
+        } else {
+            mainSubjectsHTML += itemHTML;
+        }
+    });
+
+    const card = document.createElement('div');
+    card.className = 'student-result-card';
+    card.innerHTML = `
+        <div class="result-header">
             <div>
-                <h3 style="margin-bottom: 4px;">اسم الطالب: ${student.studentName}</h3>
-                <span style="color: var(--text-muted); font-size: 14px;">رقم الجلوس: <strong>${student.seatNumber}</strong></span>
+                <h3>اسم الطالب: ${escapeHTML(student.studentName)}</h3>
+                <span>رقم الجلوس: <strong>${escapeHTML(student.seatNumber)}</strong></span>
             </div>
-            <span class="badge ${badgeClass}" style="font-size: 15px; padding: 8px 16px;">${student.status}</span>
+            <span class="badge ${badgeClass}">${escapeHTML(student.status)}</span>
         </div>
 
-        <div class="table-responsive" style="margin-bottom: 20px;">
-            <table>
-                <thead>
-                    <tr>${tableHeaders}</tr>
-                </thead>
-                <tbody>
-                    <tr>${tableRows}</tr>
-                </tbody>
-            </table>
+        <!-- قسم المواد الأساسية -->
+        <div class="result-section" style="margin-top: 20px;">
+            <h4 style="color: var(--primary); border-bottom: 2px solid var(--primary); padding-bottom: 6px; margin-bottom: 12px; font-size: 16px;">
+                📚 المواد الأساسية (تُضاف للمجموع)
+            </h4>
+            <div class="student-grades-grid">
+                ${mainSubjectsHTML || '<p style="color: var(--text-muted); padding: 10px;">لا توجد درجات مواد أساسية مسجلة.</p>'}
+            </div>
         </div>
 
-        <div class="result-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); text-align: center;">
-            <div class="result-item">
+        <!-- قسم المواد التي لا تضاف للمجموع -->
+        <div class="result-section" style="margin-top: 25px; background: rgba(0,0,0,0.02); padding: 15px; border-radius: 8px; border: 1px dashed var(--border);">
+            <h4 style="color: var(--text-muted); border-bottom: 1px solid var(--border); padding-bottom: 6px; margin-bottom: 12px; font-size: 15px;">
+                🎨 مواد لا يتم إضافتها للمجموع
+            </h4>
+            <div class="student-grades-grid">
+                ${nonTotalSubjectsHTML || '<p style="color: var(--text-muted); font-size: 13px;">لا توجد درجات مسجلة للمواد الخارجة عن المجموع.</p>'}
+            </div>
+        </div>
+
+        <!-- ملخص المجموع والتقدير -->
+        <div class="result-summary-bar" style="margin-top: 25px;">
+            <div class="summary-box-item">
                 <span>المجموع الكلي</span>
-                <strong style="font-size: 18px; color: var(--primary);">${student.totalScore} من ${student.maxScore} (${student.percentage ? student.percentage.toFixed(1) : 0}%)</strong>
+                <strong>${student.totalScore} / ${student.maxScore}</strong>
             </div>
-            <div class="result-item">
-                <span>تقدير الطالب العام</span>
-                <strong style="font-size: 18px;">${student.overallGrade}</strong>
+            <div class="summary-box-item">
+                <span>النسبة المئوية</span>
+                <strong>${student.percentage ? Number(student.percentage).toFixed(1) : 0}%</strong>
             </div>
-            <div class="result-item">
-                <span>النتيجة النهائية</span>
-                <strong style="font-size: 18px; color: ${isPass ? 'var(--success)' : 'var(--danger)'};">${student.status}</strong>
+            <div class="summary-box-item">
+                <span>التقدير العام</span>
+                <strong>${escapeHTML(student.overallGrade)}</strong>
             </div>
         </div>
     `;
+
+    resultBox.appendChild(card);
 }
 
 // =========================================================
@@ -395,7 +490,8 @@ document.getElementById('addGradeForm')?.addEventListener('submit', async functi
 
     let subjects = {};
     let totalScore = 0;
-    let count = 0;
+    let mainSubjectsCount = 0;
+    let totalEnteredCount = 0;
     let isAllPassed = true;
 
     subjectInputs.forEach(input => {
@@ -403,22 +499,31 @@ document.getElementById('addGradeForm')?.addEventListener('submit', async functi
         if (scoreVal !== '') {
             const score = parseFloat(scoreVal);
             const subjectName = input.getAttribute('data-subject');
-            subjects[subjectName] = score;
-            totalScore += score;
-            count++;
-            if (score < 50) {
-                isAllPassed = false;
+            const isNonTotal = input.getAttribute('data-non-total') === 'true';
+
+            subjects[subjectName] = {
+                score: score,
+                isNonTotal: isNonTotal
+            };
+            totalEnteredCount++;
+
+            if (!isNonTotal) {
+                totalScore += score;
+                mainSubjectsCount++;
+                if (score < 50) {
+                    isAllPassed = false;
+                }
             }
         }
     });
 
-    if (count === 0) {
+    if (totalEnteredCount === 0) {
         await showCustomAlert("تنبيه", "يرجى إدخال درجة مادة واحدة على الأقل!", "warning");
         return;
     }
 
-    const maxScore = count * 100;
-    const percentage = (totalScore / maxScore) * 100;
+    const maxScore = mainSubjectsCount * 100;
+    const percentage = maxScore > 0 ? (totalScore / maxScore) * 100 : 0;
 
     let overallGrade = '';
     if (!isAllPassed || percentage < 50) {
@@ -449,7 +554,7 @@ document.getElementById('addGradeForm')?.addEventListener('submit', async functi
             updatedAt: new Date()
         });
 
-        const alertText = isEditingMode ? `تم تحديث نتيجة الطالب (${studentName}) بنجاح!` : `تم حفظ نتيجة الطالب (${studentName}) بنجاح!`;
+        const alertText = isEditingMode ? `تم تحديث نتيجة الطالب (${escapeHTML(studentName)}) بنجاح!` : `تم حفظ نتيجة الطالب (${escapeHTML(studentName)}) بنجاح!`;
         await showCustomAlert("تم الحفظ بنجاح", alertText, "success");
 
         resetGradeForm();
@@ -488,14 +593,15 @@ async function loadTeacherGrades() {
     tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">جاري تحميل البيانات...</td></tr>';
 
     try {
-        const querySnapshot = await getDocs(collection(db, "grades"));
+        const q = query(
+            collection(db, "grades"), 
+            where("teacherUid", "==", currentTeacherUser.uid)
+        );
+        const querySnapshot = await getDocs(q);
+        
         teacherStudentsCache = [];
-
         querySnapshot.forEach((docSnap) => {
-            const student = docSnap.data();
-            if (student.teacherUid === currentTeacherUser.uid) {
-                teacherStudentsCache.push({ id: docSnap.id, ...student });
-            }
+            teacherStudentsCache.push({ id: docSnap.id, ...docSnap.data() });
         });
 
         updateDashboardStats(teacherStudentsCache);
@@ -507,7 +613,6 @@ async function loadTeacherGrades() {
     }
 }
 
-// تحديث كروت الإحصائيات
 function updateDashboardStats(students) {
     const total = students.length;
     const passed = students.filter(s => s.status === 'ناجح').length;
@@ -520,7 +625,6 @@ function updateDashboardStats(students) {
     document.getElementById('statPassRate').textContent = `${passRate}%`;
 }
 
-// فلترة وعرض الجدول
 function filterAndRenderTeacherTable() {
     const tbody = document.getElementById('teacherTableBody');
     const searchQuery = document.getElementById('searchTeacherTable')?.value.trim().toLowerCase() || '';
@@ -548,34 +652,37 @@ function filterAndRenderTeacherTable() {
         const tr = document.createElement('tr');
         const isPass = student.status === 'ناجح';
 
-        // عرض درجات المواد على هيئة وسوم (Chips) متناسقة
         let subjectsChips = Object.entries(student.subjects || {})
-            .map(([subj, score]) => `<span class="subject-chip">${subj}: <strong>${score}</strong></span>`)
+            .map(([subj, val]) => {
+                const score = getSubjectScore(val);
+                const nonTotal = isNonTotalSubject(subj, val);
+                const tag = nonTotal ? ' (خارج المجموع)' : '';
+                const style = nonTotal ? 'opacity: 0.75; font-style: italic;' : '';
+                return `<span class="subject-chip" style="${style}">${escapeHTML(subj)}${tag}: <strong>${score}</strong></span>`;
+            })
             .join(' ');
 
         tr.innerHTML = `
-            <td>
-                <div style="font-weight:700; color:var(--primary);">${student.studentName}</div>
-                <div style="font-size:12px; color:var(--text-muted);">رقم الجلوس: <strong>${student.seatNumber}</strong></div>
+            <td data-label="بيانات الطالب">
+                <div style="font-weight:700; color:var(--primary);">${escapeHTML(student.studentName)}</div>
+                <div style="font-size:12px; color:var(--text-muted);">رقم الجلوس: <strong>${escapeHTML(student.seatNumber)}</strong></div>
             </td>
-            <td><div class="subjects-container">${subjectsChips}</div></td>
-            <td><strong>${student.totalScore} / ${student.maxScore}</strong></td>
-            <td><span style="font-weight:600;">${student.overallGrade}</span></td>
-            <td><span class="badge ${isPass ? 'badge-pass' : 'badge-fail'}">${student.status}</span></td>
-            <td style="text-align: center; white-space: nowrap;">
-                <button class="btn edit-btn" data-id="${student.id}" style="padding: 6px 12px; font-size: 12px; margin-left: 4px; background-color: #f39c12; color: #fff;">تعديل</button>
-                <button class="btn btn-danger delete-btn" data-id="${student.id}" style="padding: 6px 12px; font-size: 12px;">حذف</button>
+            <td data-label="تفاصيل درجات المواد"><div class="subjects-container">${subjectsChips}</div></td>
+            <td data-label="المجموع الكلي"><strong>${student.totalScore} / ${student.maxScore}</strong></td>
+            <td data-label="التقدير العام"><span style="font-weight:600;">${escapeHTML(student.overallGrade)}</span></td>
+            <td data-label="الحالة"><span class="badge ${isPass ? 'badge-pass' : 'badge-fail'}">${escapeHTML(student.status)}</span></td>
+            <td data-label="إجراءات" style="text-align: center; white-space: nowrap;">
+                <button class="btn edit-btn" data-id="${escapeHTML(student.id)}" style="padding: 6px 12px; font-size: 12px; margin-left: 4px; background-color: #f39c12; color: #fff;">تعديل</button>
+                <button class="btn btn-danger delete-btn" data-id="${escapeHTML(student.id)}" style="padding: 6px 12px; font-size: 12px;">حذف</button>
             </td>
         `;
         tbody.appendChild(tr);
     });
 
-    // إعادة ربط أحداث أزرار التعديل والحذف للجدول المفلتر
     attachTableButtonsEvents();
 }
 
 function attachTableButtonsEvents() {
-    // أحداث التعديل
     document.querySelectorAll('.edit-btn').forEach(btn => {
         btn.addEventListener('click', async function() {
             const id = this.getAttribute('data-id');
@@ -595,13 +702,17 @@ function attachTableButtonsEvents() {
                     const subjectInputs = document.querySelectorAll('.subject-input');
                     subjectInputs.forEach(input => {
                         const subjectName = input.getAttribute('data-subject');
-                        input.value = (student.subjects && student.subjects[subjectName] !== undefined) ? student.subjects[subjectName] : '';
+                        if (student.subjects && student.subjects[subjectName] !== undefined) {
+                            input.value = getSubjectScore(student.subjects[subjectName]);
+                        } else {
+                            input.value = '';
+                        }
                     });
 
                     isEditingMode = true;
                     document.getElementById('saveGradeBtn').textContent = 'تحديث نتيجة الطالب';
                     document.getElementById('cancelEditBtn').classList.remove('hidden');
-                    document.getElementById('formTitle').textContent = `تعديل نتيجة الطالب: (${student.studentName})`;
+                    document.getElementById('formTitle').textContent = `تعديل نتيجة الطالب: (${escapeHTML(student.studentName)})`;
 
                     document.getElementById('addGradeForm').scrollIntoView({ behavior: 'smooth' });
                 }
@@ -612,11 +723,10 @@ function attachTableButtonsEvents() {
         });
     });
 
-    // أحداث الحذف
     document.querySelectorAll('.delete-btn').forEach(btn => {
         btn.addEventListener('click', async function() {
             const id = this.getAttribute('data-id');
-            const confirmed = await showCustomConfirm("تأكيد الحذف", `هل أنت متأكد من حذف سجل الطالب برقم الجلوس: (${id})؟`);
+            const confirmed = await showCustomConfirm("تأكيد الحذف", `هل أنت متأكد من حذف سجل الطالب برقم الجلوس: (${escapeHTML(id)})؟`);
             if (confirmed) {
                 await deleteDoc(doc(db, "grades", id));
                 loadTeacherGrades();
