@@ -1,331 +1,14 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl" data-theme="light">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مدرسة الكداريك الابتدائية المشتركة - نظام النتائج</title>
-    <!-- خط Tajawal -->
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
-    
-    <style>
-        /* =========================================================
-           متغيرات الألوان للوضع النهاري والليلي للصفحة بالكامل
-           ========================================================= */
-        :root {
-            --bg-body: #f4f6f9;
-            --bg-card: #ffffff;
-            --text-main: #1e293b;
-            --text-muted: #64748b;
-            --primary: #2563eb;
-            --primary-hover: #1d4ed8;
-            --border-color: #e2e8f0;
-            --input-bg: #ffffff;
-            --input-text: #0f172a;
-            --input-border: #cbd5e1;
-            --table-header-bg: #f8fafc;
-            --table-stripe: #f8fafc;
-            --modal-overlay: rgba(0, 0, 0, 0.5);
-            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
-            --danger: #ef4444;
-            --success: #10b981;
-            --info: #06b6d4;
-        }
-
-        [data-theme="dark"] {
-            --bg-body: #0f172a;
-            --bg-card: #1e293b;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --primary: #3b82f6;
-            --primary-hover: #60a5fa;
-            --border-color: #334155;
-            --input-bg: #0f172a;
-            --input-text: #f8fafc;
-            --input-border: #475569;
-            --table-header-bg: #0f172a;
-            --table-stripe: #182234;
-            --modal-overlay: rgba(0, 0, 0, 0.8);
-            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
-        }
-
-        /* =========================================================
-           التنسيقات العامة للسي اس اس (CSS)
-           ========================================================= */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
-        }
-
-        body {
-            font-family: 'Tajawal', sans-serif;
-            background-color: var(--bg-body);
-            color: var(--text-main);
-            min-height: 100vh;
-            padding: 20px 10px;
-            direction: rtl;
-        }
-
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-        }
-
-        .card {
-            background-color: var(--bg-card);
-            border-radius: 16px;
-            padding: 24px;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border-color);
-            margin-bottom: 20px;
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        /* الشريط الأعلى والتبويبات */
-        .top-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            background-color: var(--bg-card);
-            padding: 10px 16px;
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-        }
-
-        .header-tabs {
-            display: flex;
-            gap: 10px;
-        }
-
-        .tab-btn {
-            background: transparent;
-            border: none;
-            padding: 8px 16px;
-            font-family: inherit;
-            font-weight: 700;
-            color: var(--text-muted);
-            border-radius: 8px;
-            cursor: pointer;
-        }
-
-        .tab-btn.active {
-            background-color: var(--primary);
-            color: #ffffff;
-        }
-
-        .theme-toggle-btn {
-            background: var(--bg-body);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 1.2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* النماذج وعناصر الإدخال */
-        .form-group {
-            margin-bottom: 16px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: 600;
-            color: var(--text-main);
-            font-size: 0.95rem;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 10px 14px;
-            border-radius: 8px;
-            border: 1px solid var(--input-border);
-            background-color: var(--input-bg);
-            color: var(--input-text);
-            font-family: inherit;
-            font-size: 0.95rem;
-            outline: none;
-        }
-
-        .form-control:focus {
-            border-color: var(--primary);
-        }
-
-        .password-wrapper {
-            position: relative;
-        }
-
-        .toggle-password-btn {
-            position: absolute;
-            left: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            cursor: pointer;
-        }
-
-        /* الأزرار */
-        .btn {
-            padding: 10px 20px;
-            border-radius: 8px;
-            border: none;
-            font-family: inherit;
-            font-weight: 700;
-            cursor: pointer;
-            text-align: center;
-            display: inline-block;
-        }
-
-        .btn-primary {
-            background-color: var(--primary);
-            color: #ffffff;
-        }
-
-        .btn-primary:hover {
-            background-color: var(--primary-hover);
-        }
-
-        .btn-danger {
-            background-color: var(--danger);
-            color: #ffffff;
-        }
-
-        .btn-secondary {
-            background-color: var(--border-color);
-            color: var(--text-main);
-        }
-
-        /* الجداول والإحصائيات */
-        .subjects-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 12px;
-            margin-top: 10px;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .stat-card {
-            background-color: var(--bg-body);
-            border: 1px solid var(--border-color);
-            padding: 14px;
-            border-radius: 10px;
-            text-align: center;
-        }
-
-        .stat-value {
-            font-size: 1.4rem;
-            font-weight: 800;
-            margin-top: 4px;
-        }
-
-        .table-responsive {
-            overflow-x: auto;
-        }
-
-        .styled-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-
-        .styled-table th, .styled-table td {
-            padding: 12px;
-            text-align: right;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .styled-table th {
-            background-color: var(--table-header-bg);
-            color: var(--text-main);
-        }
-
-        .styled-table tbody tr:nth-child(even) {
-            background-color: var(--table-stripe);
-        }
-
-        /* النافذة المنبثقة Modal */
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: var(--modal-overlay);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-        }
-
-        .modal-overlay.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .modal-box {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            padding: 24px;
-            border-radius: 16px;
-            max-width: 400px;
-            width: 90%;
-            text-align: center;
-            box-shadow: var(--shadow);
-        }
-    </style>
+    <title>نظام نتائج الطلاب</title>
+    <link rel="stylesheet" href="./style.css">
 </head>
 <body>
 
 <div class="container">
-
-    <!-- قسم الشعار (اللوجو) والعنوان الرئيسي للمدرسة -->
-    <div class="card-header" style="text-align: center; margin-bottom: 25px;">
-        <div class="logo-container" style="max-width: 120px; margin: 0 auto 12px auto;">
-            <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stop-color="#1e3c72" />
-                        <stop offset="100%" stop-color="#2a5298" />
-                    </linearGradient>
-                    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stop-color="#fbbf24" />
-                        <stop offset="100%" stop-color="#d97706" />
-                    </linearGradient>
-                </defs>
-                <circle cx="100" cy="100" r="92" fill="url(#bgGrad)" stroke="#f59e0b" stroke-width="4"/>
-                <circle cx="100" cy="100" r="84" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="5 3" opacity="0.6"/>
-                <path d="M100 32 L100 22 M65 42 L58 35 M135 42 L142 35 M40 68 L30 63 M160 68 L170 63" stroke="#fbbf24" stroke-width="3" stroke-linecap="round"/>
-                <path d="M50 125 C 75 115, 95 120, 100 128 C 105 120, 125 115, 150 125 L 150 152 C 125 142, 105 146, 100 154 C 95 146, 75 142, 50 152 Z" fill="#ffffff"/>
-                <path d="M100 128 L100 154" stroke="#1e3c72" stroke-width="2.5"/>
-                <path d="M100 68 L135 84 L100 100 L65 84 Z" fill="url(#goldGrad)"/>
-                <path d="M82 92 L82 106 C 82 112, 118 112, 118 106 L118 92" fill="none" stroke="url(#goldGrad)" stroke-width="2.5"/>
-                <path d="M135 84 L135 106" stroke="#fbbf24" stroke-width="2"/>
-                <circle cx="135" cy="108" r="2.5" fill="#fbbf24"/>
-                <path d="M38 110 Q 32 140 55 160" fill="none" stroke="#fbbf24" stroke-width="2.5" stroke-linecap="round"/>
-                <path d="M162 110 Q 168 140 145 160" fill="none" stroke="#fbbf24" stroke-width="2.5" stroke-linecap="round"/>
-            </svg>
-        </div>
-        <h1 class="school-name" style="font-size: 1.5rem; font-weight: 800; margin-bottom: 5px;">مدرسة الكداريك الابتدائية المشتركة</h1>
-        <span class="school-badge" style="font-size: 0.9rem; color: var(--text-muted);">صرح تعليمي تربوي شامل</span>
-    </div>
 
     <!-- الشريط الأعلى (التبويبات + زر الوضع الليلي) -->
     <div class="top-header">
@@ -338,7 +21,7 @@
 
     <!-- واجهة الطالب -->
     <div id="studentView" class="card">
-        <h2 style="margin-bottom: 18px; font-size: 1.3rem;">استعلام عن نتيجة الطالب</h2>
+        <h2>استعلام عن نتيجة الطالب</h2>
         <form id="studentSearchForm">
             <div class="form-group">
                 <label for="searchStudentName">اسم الطالب</label>
@@ -356,9 +39,10 @@
 
     <!-- واجهة تسجيل دخول/إنشاء حساب المعلم -->
     <div id="teacherAuthView" class="card hidden">
+        
         <!-- تسجيل الدخول -->
         <div id="loginFormContainer">
-            <h2 style="margin-bottom: 18px; font-size: 1.3rem;">تسجيل دخول المعلم</h2>
+            <h2>تسجيل دخول المعلم</h2>
             <form id="loginForm">
                 <div class="form-group">
                     <label for="email">البريد الإلكتروني</label>
@@ -368,15 +52,59 @@
                     <label for="password">كلمة المرور</label>
                     <div class="password-wrapper">
                         <input type="password" id="password" class="form-control" required placeholder="******">
-                        <button type="button" class="toggle-password-btn" data-target="password" aria-label="إظهار/إخفاء كلمة المرور">👁️</button>
+                        <button type="button" class="toggle-password-btn" data-target="password" aria-label="إظهار أو إخفاء كلمة المرور">
+                            <svg class="eye-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                                <line x1="1" y1="1" x2="23" y2="23"></line>
+                            </svg>
+                        </button>
                     </div>
                 </div>
                 <button type="submit" class="btn btn-primary" style="width: 100%;">دخول</button>
+                <div id="loginError" class="error-msg hidden"></div>
             </form>
             <p style="margin-top: 18px; text-align: center; font-size: 14px; color: var(--text-muted);">
                 ليس لديك حساب؟ <a href="#" id="toRegisterBtn" style="color: var(--primary); font-weight: 600;">إنشاء حساب جديد</a>
             </p>
         </div>
+
+        <!-- إنشاء حساب -->
+        <div id="registerFormContainer" class="hidden">
+            <h2>تسجيل معلم جديد</h2>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 18px;">يتطلب كود اعتماد فريد مسبق من إدارة المدرسة</p>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="regFullName">الاسم الكامل</label>
+                    <input type="text" id="regFullName" class="form-control" required placeholder="أدخل اسمك الثلاثي">
+                </div>
+                <div class="form-group">
+                    <label for="regTeacherCode">كود اعتماد المعلم الفريد</label>
+                    <input type="text" id="regTeacherCode" class="form-control" required placeholder="مثال: TCH-1001">
+                </div>
+                <div class="form-group">
+                    <label for="regEmail">البريد الإلكتروني</label>
+                    <input type="email" id="regEmail" class="form-control" required placeholder="example@mail.com">
+                </div>
+                <div class="form-group">
+                    <label for="regPassword">كلمة المرور (6 أحرف على الأقل)</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="regPassword" class="form-control" required minlength="6" placeholder="******">
+                        <button type="button" class="toggle-password-btn" data-target="regPassword" aria-label="إظهار أو إخفاء كلمة المرور">
+                            <svg class="eye-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                                <line x1="1" y1="1" x2="23" y2="23"></line>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">إنشاء حساب معلم معتمد</button>
+                <div id="registerError" class="error-msg hidden"></div>
+            </form>
+            <p style="margin-top: 18px; text-align: center; font-size: 14px; color: var(--text-muted);">
+                لديك حساب بالفعل؟ <a href="#" id="toLoginBtn" style="color: var(--primary); font-weight: 600;">تسجيل الدخول</a>
+            </p>
+        </div>
+
     </div>
 
     <!-- لوحة تحكم المعلم -->
@@ -386,81 +114,151 @@
             <button id="logoutBtn" class="btn btn-danger" style="padding: 8px 16px; font-size: 13px;">تسجيل الخروج</button>
         </div>
 
+        <!-- نموذج إدخال وتعديل طالب -->
         <form id="addGradeForm">
-            <h4 id="formTitle" style="margin-bottom: 15px;">رصد درجات طالب جديد</h4>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
-                <div class="form-group">
+            <h4 id="formTitle">رصد درجات طالب جديد</h4>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px;">
+                <div class="form-group" style="margin-bottom:0;">
                     <label for="studentName">اسم الطالب الكامل</label>
-                    <input type="text" id="studentName" class="form-control" required placeholder="أدخل اسم الطالب">
+                    <input type="text" id="studentName" class="form-control" required placeholder="أدخل اسم الطالب الكامل">
                 </div>
-                <div class="form-group">
+                <div class="form-group" style="margin-bottom:0;">
                     <label for="seatNumber">رقم الجلوس</label>
                     <input type="text" id="seatNumber" class="form-control" required placeholder="أدخل رقم الجلوس">
                 </div>
             </div>
 
+            <!-- المواد الأساسية المضافة للمجموع -->
             <label style="font-weight: 600; color: var(--primary); margin-top: 15px; display: block;">المواد الأساسية (تُضاف للمجموع):</label>
             <div class="subjects-grid">
                 <div class="form-group">
                     <label>اللغة العربية</label>
-                    <input type="number" min="0" max="100" class="form-control" placeholder="من 100">
+                    <input type="number" min="0" max="100" class="form-control subject-input" data-subject="اللغة العربية" placeholder="من 100">
+                </div>
+                <div class="form-group">
+                    <label>اللغة الإنجليزية</label>
+                    <input type="number" min="0" max="100" class="form-control subject-input" data-subject="اللغة الإنجليزية" placeholder="من 100">
                 </div>
                 <div class="form-group">
                     <label>الرياضيات</label>
-                    <input type="number" min="0" max="100" class="form-control" placeholder="من 100">
+                    <input type="number" min="0" max="100" class="form-control subject-input" data-subject="الرياضيات" placeholder="من 100">
+                </div>
+                <div class="form-group">
+                    <label>العلوم</label>
+                    <input type="number" min="0" max="100" class="form-control subject-input" data-subject="العلوم" placeholder="من 100">
+                </div>
+                <div class="form-group">
+                    <label>الدراسات الاجتماعية</label>
+                    <input type="number" min="0" max="100" class="form-control subject-input" data-subject="الدراسات الاجتماعية" placeholder="من 100">
+                </div>
+                <div class="form-group">
+                    <label>الدين الإسلامي</label>
+                    <input type="number" min="0" max="100" class="form-control subject-input" data-subject="الدين الإسلامي" placeholder="من 100">
+                </div>
+                <div class="form-group">
+                    <label>المتعدد (متعدد التخصصات)</label>
+                    <input type="number" min="0" max="100" class="form-control subject-input" data-subject="المتعدد" placeholder="من 100">
+                </div>
+            </div>
+
+            <!-- مواد لا تضاف للمجموع -->
+            <label style="font-weight: 600; color: var(--text-muted); margin-top: 20px; display: block;">مواد لا يتم إضافتها على المجموع:</label>
+            <div class="subjects-grid">
+                <div class="form-group">
+                    <label>الأنشطة الرياضية</label>
+                    <input type="number" min="0" max="100" class="form-control subject-input" data-subject="الأنشطة الرياضية" data-non-total="true" placeholder="من 100">
+                </div>
+                <div class="form-group">
+                    <label>التربية الفنية (الرسم)</label>
+                    <input type="number" min="0" max="100" class="form-control subject-input" data-subject="التربية الفنية" data-non-total="true" placeholder="من 100">
+                </div>
+                <div class="form-group">
+                    <label>الحاسب الآلي</label>
+                    <input type="number" min="0" max="60" class="form-control subject-input" data-subject="الحاسب الآلي" data-non-total="true" placeholder="من 60">
                 </div>
             </div>
 
             <div style="display: flex; gap: 10px; margin-top: 20px;">
                 <button type="submit" id="saveGradeBtn" class="btn btn-primary" style="flex: 1;">حفظ نتيجة الطالب</button>
+                <button type="button" id="cancelEditBtn" class="btn btn-secondary hidden">إلغاء التعديل</button>
             </div>
         </form>
+
+        <hr style="margin: 25px 0; border: none; border-top: 1px solid var(--border);">
+
+        <!-- قسم تنظيم النتائج والإحصائيات -->
+        <div class="dashboard-section-header">
+            <h4>النتائج المضافة بواسطة المعلم</h4>
+        </div>
+
+        <!-- بطاقات ملخص الإحصائيات -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">إجمالي الطلاب</div>
+                <div id="statTotalStudents" class="stat-value">0</div>
+            </div>
+            <div class="stat-card stat-success">
+                <div class="stat-label">الطلاب الناجحون</div>
+                <div id="statPassedStudents" class="stat-value">0</div>
+            </div>
+            <div class="stat-card stat-danger">
+                <div class="stat-label">الطلاب الراسبون</div>
+                <div id="statFailedStudents" class="stat-value">0</div>
+            </div>
+            <div class="stat-card stat-info">
+                <div class="stat-label">نسبة النجاح</div>
+                <div id="statPassRate" class="stat-value">0%</div>
+            </div>
+        </div>
+
+        <!-- شريط البحث والفلترة -->
+        <div class="table-toolbar">
+            <div class="search-box">
+                <input type="text" id="searchTeacherTable" class="form-control" placeholder="🔍 ابحث باسم الطالب أو رقم الجلوس...">
+            </div>
+            <div class="filter-box">
+                <select id="filterStatus" class="form-control">
+                    <option value="all">جميع الحالات</option>
+                    <option value="nafs">الناجحون فقط</option>
+                    <option value="rasb">الراسبون فقط</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- جدول نتائج الطلاب المنسق -->
+        <div class="table-responsive">
+            <table class="styled-table">
+                <thead>
+                    <tr>
+                        <th>بيانات الطالب</th>
+                        <th>تفاصيل درجات المواد</th>
+                        <th>المجموع الكلي</th>
+                        <th>التقدير العام</th>
+                        <th>الحالة</th>
+                        <th style="text-align: center;">إجراءات</th>
+                    </tr>
+                </thead>
+                <tbody id="teacherTableBody">
+                    <tr><td colspan="6" style="text-align:center;">جاري تحميل البيانات...</td></tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
 </div>
 
-<!-- النافذة المنبثقة (Modal) -->
+<!-- النافذة المنبثقة الاحترافية (Custom Modal Container) -->
 <div id="customModal" class="modal-overlay">
     <div class="modal-box">
-        <div id="modalIcon" style="font-size: 2rem; margin-bottom: 10px;">✨</div>
-        <h3 id="modalTitle" style="margin-bottom: 8px;">تنبيه</h3>
-        <p id="modalMessage" style="color: var(--text-muted); margin-bottom: 20px;">رسالة التنبيه...</p>
+        <div id="modalIcon" class="modal-icon">✨</div>
+        <h3 id="modalTitle" class="modal-title">تنبيه</h3>
+        <p id="modalMessage" class="modal-message">رسالة التنبيه...</p>
         <div class="modal-actions">
             <button id="modalConfirmBtn" class="btn btn-primary" style="min-width: 100px;">موافق</button>
+            <button id="modalCancelBtn" class="btn btn-secondary hidden" style="min-width: 100px;">إلغاء</button>
         </div>
     </div>
 </div>
-
-<script>
-  // تفعيل الوضع الليلي الكامل للصفحة وحفظ التفضيل
-  document.addEventListener('DOMContentLoaded', () => {
-    const themeBtn = document.getElementById('themeToggleBtn');
-    const htmlElement = document.documentElement;
-
-    // جلب الوضع المسجل سابقاً
-    const savedTheme = localStorage.getItem('theme') || 'light';
-    htmlElement.setAttribute('data-theme', savedTheme);
-    updateToggleIcon(savedTheme);
-
-    // حدث الضغط على زر التحويل
-    if (themeBtn) {
-      themeBtn.addEventListener('click', () => {
-        const currentTheme = htmlElement.getAttribute('data-theme');
-        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-        
-        htmlElement.setAttribute('data-theme', newTheme);
-        localStorage.setItem('theme', newTheme);
-        updateToggleIcon(newTheme);
-      });
-    }
-
-    function updateToggleIcon(theme) {
-      if (themeBtn) {
-        themeBtn.textContent = theme === 'dark' ? '☀️' : '🌙';
-      }
-    }
-  });
-</script>
 
 <script type="module" src="./script.js"></script>
 </body>
