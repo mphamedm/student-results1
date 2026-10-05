@@ -41,6 +41,7 @@ try {
 }
 
 let currentTeacherUser = null;
+let isEditingMode = false;
 
 // =========================================================
 // 3. إدارة الوضع الليلي والتبويبات
@@ -108,6 +109,9 @@ document.addEventListener('DOMContentLoaded', () => {
         registerFormContainer.classList.add('hidden');
         loginFormContainer.classList.remove('hidden');
     });
+
+    // زر إلغاء التعديل
+    document.getElementById('cancelEditBtn')?.addEventListener('click', resetGradeForm);
 });
 
 // =========================================================
@@ -146,7 +150,7 @@ if (auth) {
 }
 
 // =========================================================
-// 5. استعلام الطالب (البحث برقم الجلوس فقط)
+// 5. استعلام الطالب (برقم الجلوس فقط)
 // =========================================================
 document.getElementById('studentSearchForm')?.addEventListener('submit', async function(e) {
     e.preventDefault();
@@ -158,7 +162,6 @@ document.getElementById('studentSearchForm')?.addEventListener('submit', async f
     resultBox.classList.remove('hidden');
 
     try {
-        // البحث المباشر برقم الجلوس فقط
         const studentDocRef = doc(db, "grades", seatNumber);
         const studentSnap = await getDoc(studentDocRef);
 
@@ -176,7 +179,6 @@ document.getElementById('studentSearchForm')?.addEventListener('submit', async f
     }
 });
 
-// دالة عرض نتيجة الطالب
 function renderStudentResult(student, resultBox) {
     const isPass = student.status === 'ناجح';
     const statusClass = isPass ? 'pass' : 'fail';
@@ -232,7 +234,7 @@ function renderStudentResult(student, resultBox) {
 }
 
 // =========================================================
-// 6. تسجيل دخول المعلم
+// 6. تسجيل دخول وإنشاء حساب المعلم
 // =========================================================
 document.getElementById('loginForm')?.addEventListener('submit', async function(e) {
     e.preventDefault();
@@ -250,9 +252,6 @@ document.getElementById('loginForm')?.addEventListener('submit', async function(
     }
 });
 
-// =========================================================
-// 7. إنشاء حساب معلم بكود اعتماد
-// =========================================================
 document.getElementById('registerForm')?.addEventListener('submit', async function(e) {
     e.preventDefault();
     const fullName = document.getElementById('regFullName').value.trim();
@@ -297,7 +296,7 @@ document.getElementById('registerForm')?.addEventListener('submit', async functi
 });
 
 // =========================================================
-// 8. رصد نتائج الطالب
+// 7. حفظ / تحديث درجات الطالب
 // =========================================================
 document.getElementById('addGradeForm')?.addEventListener('submit', async function(e) {
     e.preventDefault();
@@ -363,17 +362,37 @@ document.getElementById('addGradeForm')?.addEventListener('submit', async functi
             updatedAt: new Date()
         });
 
-        alert(`تم حفظ نتيجة الطالب (${studentName}) بنجاح!`);
-        this.reset();
+        alert(isEditingMode ? `تم تحديث نتيجة الطالب (${studentName}) بنجاح!` : `تم حفظ نتيجة الطالب (${studentName}) بنجاح!`);
+        resetGradeForm();
         loadTeacherGrades();
     } catch (error) {
         console.error("خطأ الحفظ:", error);
-        alert("حدث خطأ أثناء حفظ بيانات الطالب!");
+        alert("حدث خطأ أثناء حفظ البيانات!");
     }
 });
 
+// دالة إعادة ضبط نموذج الإدخال
+function resetGradeForm() {
+    const form = document.getElementById('addGradeForm');
+    if (form) form.reset();
+
+    const seatInput = document.getElementById('seatNumber');
+    if (seatInput) seatInput.readOnly = false;
+
+    const saveBtn = document.getElementById('saveGradeBtn');
+    if (saveBtn) saveBtn.textContent = 'حفظ نتيجة الطالب';
+
+    const cancelBtn = document.getElementById('cancelEditBtn');
+    if (cancelBtn) cancelBtn.classList.add('hidden');
+
+    const formTitle = document.getElementById('formTitle');
+    if (formTitle) formTitle.textContent = 'رصد درجات طالب جديد';
+
+    isEditingMode = false;
+}
+
 // =========================================================
-// 9. عرض جدول "النتائج المضافة بواسطة المعلم"
+// 8. عرض جدول النتائج المضافة مع أزرار (تعديل وحذف)
 // =========================================================
 async function loadTeacherGrades() {
     if (!currentTeacherUser || !db) return;
@@ -406,7 +425,10 @@ async function loadTeacherGrades() {
                     <td><strong>${student.totalScore} / ${student.maxScore}</strong></td>
                     <td>${student.overallGrade}</td>
                     <td><span class="badge ${isPass ? 'badge-pass' : 'badge-fail'}">${student.status}</span></td>
-                    <td><button class="btn btn-danger delete-btn" data-id="${docId}" style="padding: 6px 12px; font-size: 12px;">حذف</button></td>
+                    <td style="white-space: nowrap;">
+                        <button class="btn edit-btn" data-id="${docId}" style="padding: 6px 12px; font-size: 12px; margin-left: 4px; background-color: #f39c12; color: #fff; border:none; border-radius:4px; cursor:pointer;">تعديل</button>
+                        <button class="btn btn-danger delete-btn" data-id="${docId}" style="padding: 6px 12px; font-size: 12px;">حذف</button>
+                    </td>
                 `;
                 tbody.appendChild(tr);
             }
@@ -416,6 +438,48 @@ async function loadTeacherGrades() {
             tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">لا يوجد طلاب مضافون حتى الآن بواسطة المعلم</td></tr>';
         }
 
+        // أحداث أزرار التعديل
+        document.querySelectorAll('.edit-btn').forEach(btn => {
+            btn.addEventListener('click', async function() {
+                const id = this.getAttribute('data-id');
+                try {
+                    const studentDocRef = doc(db, "grades", id);
+                    const studentSnap = await getDoc(studentDocRef);
+
+                    if (studentSnap.exists()) {
+                        const student = studentSnap.data();
+
+                        // تعبئة البيانات في نموذج الإدخال
+                        document.getElementById('studentName').value = student.studentName || '';
+
+                        const seatInput = document.getElementById('seatNumber');
+                        seatInput.value = student.seatNumber || id;
+                        seatInput.readOnly = true; // منع تغيير رقم الجلوس أثناء التعديل
+
+                        // تعبئة درجات المواد
+                        const subjectInputs = document.querySelectorAll('.subject-input');
+                        subjectInputs.forEach(input => {
+                            const subjectName = input.getAttribute('data-subject');
+                            input.value = (student.subjects && student.subjects[subjectName] !== undefined) ? student.subjects[subjectName] : '';
+                        });
+
+                        // وضع التعديل
+                        isEditingMode = true;
+                        document.getElementById('saveGradeBtn').textContent = 'تحديث نتيجة الطالب';
+                        document.getElementById('cancelEditBtn').classList.remove('hidden');
+                        document.getElementById('formTitle').textContent = `تعديل نتيجة الطالب: (${student.studentName})`;
+
+                        // الانتقال للنموذج أعلى الصفحة
+                        document.getElementById('addGradeForm').scrollIntoView({ behavior: 'smooth' });
+                    }
+                } catch (err) {
+                    console.error("خطأ التعديل:", err);
+                    alert("حدث خطأ أثناء تحميل البيانات للتعديل!");
+                }
+            });
+        });
+
+        // أحداث أزرار الحذف
         document.querySelectorAll('.delete-btn').forEach(btn => {
             btn.addEventListener('click', async function() {
                 const id = this.getAttribute('data-id');
