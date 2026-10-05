@@ -42,6 +42,7 @@ try {
 
 let currentTeacherUser = null;
 let isEditingMode = false;
+let teacherStudentsCache = []; // التخزين المؤقت للطلاب لغرض الفلترة السريعة
 
 // =========================================================
 // 3. نظام النوافذ المنبثقة الاحترافية (Custom Modals)
@@ -55,7 +56,6 @@ function showCustomAlert(title, message, type = 'success') {
         const confirmBtn = document.getElementById('modalConfirmBtn');
         const cancelBtn = document.getElementById('modalCancelBtn');
 
-        // أشكال وأيقونات التنبيه
         if (type === 'success') {
             modalIcon.textContent = '🎉';
         } else if (type === 'error') {
@@ -195,6 +195,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.getElementById('cancelEditBtn')?.addEventListener('click', resetGradeForm);
+
+    // أحداث البحث والفلترة السريعة
+    document.getElementById('searchTeacherTable')?.addEventListener('input', filterAndRenderTeacherTable);
+    document.getElementById('filterStatus')?.addEventListener('change', filterAndRenderTeacherTable);
 });
 
 // =========================================================
@@ -476,105 +480,149 @@ function resetGradeForm() {
 }
 
 // =========================================================
-// 9. عرض جدول النتائج المضافة بواسطة المعلم
+// 9. تحميل وتنظيم عرض نتائج الطلاب مع الإحصائيات والفلترة
 // =========================================================
 async function loadTeacherGrades() {
     if (!currentTeacherUser || !db) return;
     const tbody = document.getElementById('teacherTableBody');
-    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">جاري تحميل البيانات...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">جاري تحميل البيانات...</td></tr>';
 
     try {
         const querySnapshot = await getDocs(collection(db, "grades"));
-
-        tbody.innerHTML = '';
-        let count = 0;
+        teacherStudentsCache = [];
 
         querySnapshot.forEach((docSnap) => {
             const student = docSnap.data();
-
             if (student.teacherUid === currentTeacherUser.uid) {
-                count++;
-                const docId = docSnap.id;
-                const tr = document.createElement('tr');
-                const isPass = student.status === 'ناجح';
-
-                let subjectsSummary = Object.entries(student.subjects || {})
-                    .map(([subj, score]) => `${subj}: <strong>${score}</strong>`)
-                    .join(' | ');
-
-                tr.innerHTML = `
-                    <td><strong style="color:var(--primary);">${student.studentName}</strong></td>
-                    <td><strong>${student.seatNumber}</strong></td>
-                    <td style="font-size:13px; color: var(--text-muted);">${subjectsSummary}</td>
-                    <td><strong>${student.totalScore} / ${student.maxScore}</strong></td>
-                    <td>${student.overallGrade}</td>
-                    <td><span class="badge ${isPass ? 'badge-pass' : 'badge-fail'}">${student.status}</span></td>
-                    <td style="white-space: nowrap;">
-                        <button class="btn edit-btn" data-id="${docId}" style="padding: 6px 12px; font-size: 12px; margin-left: 4px; background-color: #f39c12; color: #fff;">تعديل</button>
-                        <button class="btn btn-danger delete-btn" data-id="${docId}" style="padding: 6px 12px; font-size: 12px;">حذف</button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
+                teacherStudentsCache.push({ id: docSnap.id, ...student });
             }
         });
 
-        if (count === 0) {
-            tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">لا يوجد طلاب مضافون حتى الآن بواسطة المعلم</td></tr>';
-        }
-
-        // أحداث أزرار التعديل
-        document.querySelectorAll('.edit-btn').forEach(btn => {
-            btn.addEventListener('click', async function() {
-                const id = this.getAttribute('data-id');
-                try {
-                    const studentDocRef = doc(db, "grades", id);
-                    const studentSnap = await getDoc(studentDocRef);
-
-                    if (studentSnap.exists()) {
-                        const student = studentSnap.data();
-
-                        document.getElementById('studentName').value = student.studentName || '';
-
-                        const seatInput = document.getElementById('seatNumber');
-                        seatInput.value = student.seatNumber || id;
-                        seatInput.readOnly = true;
-
-                        const subjectInputs = document.querySelectorAll('.subject-input');
-                        subjectInputs.forEach(input => {
-                            const subjectName = input.getAttribute('data-subject');
-                            input.value = (student.subjects && student.subjects[subjectName] !== undefined) ? student.subjects[subjectName] : '';
-                        });
-
-                        isEditingMode = true;
-                        document.getElementById('saveGradeBtn').textContent = 'تحديث نتيجة الطالب';
-                        document.getElementById('cancelEditBtn').classList.remove('hidden');
-                        document.getElementById('formTitle').textContent = `تعديل نتيجة الطالب: (${student.studentName})`;
-
-                        document.getElementById('addGradeForm').scrollIntoView({ behavior: 'smooth' });
-                    }
-                } catch (err) {
-                    console.error("خطأ التعديل:", err);
-                    await showCustomAlert("خطأ", "حدث خطأ أثناء تحميل البيانات للتعديل!", "error");
-                }
-            });
-        });
-
-        // أحداث أزرار الحذف
-        document.querySelectorAll('.delete-btn').forEach(btn => {
-            btn.addEventListener('click', async function() {
-                const id = this.getAttribute('data-id');
-                const confirmed = await showCustomConfirm("تأكيد الحذف", `هل أنت متأكد من حذف سجل الطالب برقم الجلوس: (${id})؟`);
-                if (confirmed) {
-                    await deleteDoc(doc(db, "grades", id));
-                    loadTeacherGrades();
-                }
-            });
-        });
+        updateDashboardStats(teacherStudentsCache);
+        filterAndRenderTeacherTable();
 
     } catch (error) {
         console.error("خطأ التحميل:", error);
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:red;">خطأ في تحميل البيانات</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:red;">خطأ في تحميل البيانات</td></tr>';
     }
+}
+
+// تحديث كروت الإحصائيات
+function updateDashboardStats(students) {
+    const total = students.length;
+    const passed = students.filter(s => s.status === 'ناجح').length;
+    const failed = total - passed;
+    const passRate = total > 0 ? Math.round((passed / total) * 100) : 0;
+
+    document.getElementById('statTotalStudents').textContent = total;
+    document.getElementById('statPassedStudents').textContent = passed;
+    document.getElementById('statFailedStudents').textContent = failed;
+    document.getElementById('statPassRate').textContent = `${passRate}%`;
+}
+
+// فلترة وعرض الجدول
+function filterAndRenderTeacherTable() {
+    const tbody = document.getElementById('teacherTableBody');
+    const searchQuery = document.getElementById('searchTeacherTable')?.value.trim().toLowerCase() || '';
+    const statusFilter = document.getElementById('filterStatus')?.value || 'all';
+
+    let filtered = teacherStudentsCache.filter(student => {
+        const matchesSearch = student.studentName.toLowerCase().includes(searchQuery) || 
+                              student.seatNumber.toString().includes(searchQuery);
+        
+        let matchesStatus = true;
+        if (statusFilter === 'nafs') matchesStatus = (student.status === 'ناجح');
+        if (statusFilter === 'rasb') matchesStatus = (student.status === 'راسب');
+
+        return matchesSearch && matchesStatus;
+    });
+
+    tbody.innerHTML = '';
+
+    if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--text-muted);">لا توجد نتائج مطابقة للبحث أو الفلترة</td></tr>';
+        return;
+    }
+
+    filtered.forEach(student => {
+        const tr = document.createElement('tr');
+        const isPass = student.status === 'ناجح';
+
+        // عرض درجات المواد على هيئة وسوم (Chips) متناسقة
+        let subjectsChips = Object.entries(student.subjects || {})
+            .map(([subj, score]) => `<span class="subject-chip">${subj}: <strong>${score}</strong></span>`)
+            .join(' ');
+
+        tr.innerHTML = `
+            <td>
+                <div style="font-weight:700; color:var(--primary);">${student.studentName}</div>
+                <div style="font-size:12px; color:var(--text-muted);">رقم الجلوس: <strong>${student.seatNumber}</strong></div>
+            </td>
+            <td><div class="subjects-container">${subjectsChips}</div></td>
+            <td><strong>${student.totalScore} / ${student.maxScore}</strong></td>
+            <td><span style="font-weight:600;">${student.overallGrade}</span></td>
+            <td><span class="badge ${isPass ? 'badge-pass' : 'badge-fail'}">${student.status}</span></td>
+            <td style="text-align: center; white-space: nowrap;">
+                <button class="btn edit-btn" data-id="${student.id}" style="padding: 6px 12px; font-size: 12px; margin-left: 4px; background-color: #f39c12; color: #fff;">تعديل</button>
+                <button class="btn btn-danger delete-btn" data-id="${student.id}" style="padding: 6px 12px; font-size: 12px;">حذف</button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    // إعادة ربط أحداث أزرار التعديل والحذف للجدول المفلتر
+    attachTableButtonsEvents();
+}
+
+function attachTableButtonsEvents() {
+    // أحداث التعديل
+    document.querySelectorAll('.edit-btn').forEach(btn => {
+        btn.addEventListener('click', async function() {
+            const id = this.getAttribute('data-id');
+            try {
+                const studentDocRef = doc(db, "grades", id);
+                const studentSnap = await getDoc(studentDocRef);
+
+                if (studentSnap.exists()) {
+                    const student = studentSnap.data();
+
+                    document.getElementById('studentName').value = student.studentName || '';
+
+                    const seatInput = document.getElementById('seatNumber');
+                    seatInput.value = student.seatNumber || id;
+                    seatInput.readOnly = true;
+
+                    const subjectInputs = document.querySelectorAll('.subject-input');
+                    subjectInputs.forEach(input => {
+                        const subjectName = input.getAttribute('data-subject');
+                        input.value = (student.subjects && student.subjects[subjectName] !== undefined) ? student.subjects[subjectName] : '';
+                    });
+
+                    isEditingMode = true;
+                    document.getElementById('saveGradeBtn').textContent = 'تحديث نتيجة الطالب';
+                    document.getElementById('cancelEditBtn').classList.remove('hidden');
+                    document.getElementById('formTitle').textContent = `تعديل نتيجة الطالب: (${student.studentName})`;
+
+                    document.getElementById('addGradeForm').scrollIntoView({ behavior: 'smooth' });
+                }
+            } catch (err) {
+                console.error("خطأ التعديل:", err);
+                await showCustomAlert("خطأ", "حدث خطأ أثناء تحميل البيانات للتعديل!", "error");
+            }
+        });
+    });
+
+    // أحداث الحذف
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', async function() {
+            const id = this.getAttribute('data-id');
+            const confirmed = await showCustomConfirm("تأكيد الحذف", `هل أنت متأكد من حذف سجل الطالب برقم الجلوس: (${id})؟`);
+            if (confirmed) {
+                await deleteDoc(doc(db, "grades", id));
+                loadTeacherGrades();
+            }
+        });
+    });
 }
 
 document.getElementById('logoutBtn')?.addEventListener('click', () => {
