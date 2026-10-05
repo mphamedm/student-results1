@@ -44,7 +44,91 @@ let currentTeacherUser = null;
 let isEditingMode = false;
 
 // =========================================================
-// 3. إدارة الوضع الليلي والتبويبات
+// 3. نظام النوافذ المنبثقة الاحترافية (Custom Modals)
+// =========================================================
+function showCustomAlert(title, message, type = 'success') {
+    return new Promise((resolve) => {
+        const modal = document.getElementById('customModal');
+        const modalIcon = document.getElementById('modalIcon');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalMessage = document.getElementById('modalMessage');
+        const confirmBtn = document.getElementById('modalConfirmBtn');
+        const cancelBtn = document.getElementById('modalCancelBtn');
+
+        // أشكال وأيقونات التنبيه
+        if (type === 'success') {
+            modalIcon.textContent = '🎉';
+        } else if (type === 'error') {
+            modalIcon.textContent = '⚠️';
+        } else if (type === 'warning') {
+            modalIcon.textContent = '💡';
+        } else {
+            modalIcon.textContent = 'ℹ️';
+        }
+
+        modalTitle.textContent = title;
+        modalMessage.textContent = message;
+
+        confirmBtn.className = 'btn btn-primary';
+        confirmBtn.textContent = 'موافق';
+        cancelBtn.classList.add('hidden');
+
+        modal.classList.add('active');
+
+        const handleConfirm = () => {
+            modal.classList.remove('active');
+            confirmBtn.removeEventListener('click', handleConfirm);
+            resolve(true);
+        };
+
+        confirmBtn.onclick = handleConfirm;
+    });
+}
+
+function showCustomConfirm(title, message) {
+    return new Promise((resolve) => {
+        const modal = document.getElementById('customModal');
+        const modalIcon = document.getElementById('modalIcon');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalMessage = document.getElementById('modalMessage');
+        const confirmBtn = document.getElementById('modalConfirmBtn');
+        const cancelBtn = document.getElementById('modalCancelBtn');
+
+        modalIcon.textContent = '❓';
+        modalTitle.textContent = title;
+        modalMessage.textContent = message;
+
+        confirmBtn.className = 'btn btn-danger';
+        confirmBtn.textContent = 'تأكيد الحذف';
+        cancelBtn.classList.remove('hidden');
+        cancelBtn.textContent = 'إلغاء';
+
+        modal.classList.add('active');
+
+        const handleConfirm = () => {
+            modal.classList.remove('active');
+            cleanup();
+            resolve(true);
+        };
+
+        const handleCancel = () => {
+            modal.classList.remove('active');
+            cleanup();
+            resolve(false);
+        };
+
+        function cleanup() {
+            confirmBtn.removeEventListener('click', handleConfirm);
+            cancelBtn.removeEventListener('click', handleCancel);
+        }
+
+        confirmBtn.onclick = handleConfirm;
+        cancelBtn.onclick = handleCancel;
+    });
+}
+
+// =========================================================
+// 4. إدارة الوضع الليلي والتبويبات
 // =========================================================
 document.addEventListener('DOMContentLoaded', () => {
     const themeToggleBtn = document.getElementById('themeToggleBtn');
@@ -110,12 +194,11 @@ document.addEventListener('DOMContentLoaded', () => {
         loginFormContainer.classList.remove('hidden');
     });
 
-    // زر إلغاء التعديل
     document.getElementById('cancelEditBtn')?.addEventListener('click', resetGradeForm);
 });
 
 // =========================================================
-// 4. مراقبة حالة تسجيل الدخول
+// 5. مراقبة حالة تسجيل الدخول
 // =========================================================
 if (auth) {
     onAuthStateChanged(auth, async (user) => {
@@ -150,7 +233,7 @@ if (auth) {
 }
 
 // =========================================================
-// 5. استعلام الطالب (برقم الجلوس فقط)
+// 6. استعلام الطالب (برقم الجلوس فقط)
 // =========================================================
 document.getElementById('studentSearchForm')?.addEventListener('submit', async function(e) {
     e.preventDefault();
@@ -234,7 +317,7 @@ function renderStudentResult(student, resultBox) {
 }
 
 // =========================================================
-// 6. تسجيل دخول وإنشاء حساب المعلم
+// 7. تسجيل دخول وإنشاء حساب المعلم
 // =========================================================
 document.getElementById('loginForm')?.addEventListener('submit', async function(e) {
     e.preventDefault();
@@ -285,7 +368,7 @@ document.getElementById('registerForm')?.addEventListener('submit', async functi
 
         await setDoc(codeRef, { isUsed: true, usedBy: user.uid }, { merge: true });
 
-        alert("تم إنشاء حساب المعلم بنجاح!");
+        await showCustomAlert("تم بنجاح", "تم إنشاء حساب معلم معتمد بنجاح!", "success");
         this.reset();
         document.getElementById('loginFormContainer').classList.remove('hidden');
         document.getElementById('registerFormContainer').classList.add('hidden');
@@ -296,7 +379,7 @@ document.getElementById('registerForm')?.addEventListener('submit', async functi
 });
 
 // =========================================================
-// 7. حفظ / تحديث درجات الطالب
+// 8. حفظ وتحديث نتيجة الطالب
 // =========================================================
 document.getElementById('addGradeForm')?.addEventListener('submit', async function(e) {
     e.preventDefault();
@@ -326,7 +409,7 @@ document.getElementById('addGradeForm')?.addEventListener('submit', async functi
     });
 
     if (count === 0) {
-        alert('يرجى إدخال درجة مادة واحدة على الأقل!');
+        await showCustomAlert("تنبيه", "يرجى إدخال درجة مادة واحدة على الأقل!", "warning");
         return;
     }
 
@@ -362,16 +445,17 @@ document.getElementById('addGradeForm')?.addEventListener('submit', async functi
             updatedAt: new Date()
         });
 
-        alert(isEditingMode ? `تم تحديث نتيجة الطالب (${studentName}) بنجاح!` : `تم حفظ نتيجة الطالب (${studentName}) بنجاح!`);
+        const alertText = isEditingMode ? `تم تحديث نتيجة الطالب (${studentName}) بنجاح!` : `تم حفظ نتيجة الطالب (${studentName}) بنجاح!`;
+        await showCustomAlert("تم الحفظ بنجاح", alertText, "success");
+
         resetGradeForm();
         loadTeacherGrades();
     } catch (error) {
         console.error("خطأ الحفظ:", error);
-        alert("حدث خطأ أثناء حفظ البيانات!");
+        await showCustomAlert("خطأ", "حدث خطأ أثناء حفظ البيانات!", "error");
     }
 });
 
-// دالة إعادة ضبط نموذج الإدخال
 function resetGradeForm() {
     const form = document.getElementById('addGradeForm');
     if (form) form.reset();
@@ -392,7 +476,7 @@ function resetGradeForm() {
 }
 
 // =========================================================
-// 8. عرض جدول النتائج المضافة مع أزرار (تعديل وحذف)
+// 9. عرض جدول النتائج المضافة بواسطة المعلم
 // =========================================================
 async function loadTeacherGrades() {
     if (!currentTeacherUser || !db) return;
@@ -426,7 +510,7 @@ async function loadTeacherGrades() {
                     <td>${student.overallGrade}</td>
                     <td><span class="badge ${isPass ? 'badge-pass' : 'badge-fail'}">${student.status}</span></td>
                     <td style="white-space: nowrap;">
-                        <button class="btn edit-btn" data-id="${docId}" style="padding: 6px 12px; font-size: 12px; margin-left: 4px; background-color: #f39c12; color: #fff; border:none; border-radius:4px; cursor:pointer;">تعديل</button>
+                        <button class="btn edit-btn" data-id="${docId}" style="padding: 6px 12px; font-size: 12px; margin-left: 4px; background-color: #f39c12; color: #fff;">تعديل</button>
                         <button class="btn btn-danger delete-btn" data-id="${docId}" style="padding: 6px 12px; font-size: 12px;">حذف</button>
                     </td>
                 `;
@@ -449,32 +533,28 @@ async function loadTeacherGrades() {
                     if (studentSnap.exists()) {
                         const student = studentSnap.data();
 
-                        // تعبئة البيانات في نموذج الإدخال
                         document.getElementById('studentName').value = student.studentName || '';
 
                         const seatInput = document.getElementById('seatNumber');
                         seatInput.value = student.seatNumber || id;
-                        seatInput.readOnly = true; // منع تغيير رقم الجلوس أثناء التعديل
+                        seatInput.readOnly = true;
 
-                        // تعبئة درجات المواد
                         const subjectInputs = document.querySelectorAll('.subject-input');
                         subjectInputs.forEach(input => {
                             const subjectName = input.getAttribute('data-subject');
                             input.value = (student.subjects && student.subjects[subjectName] !== undefined) ? student.subjects[subjectName] : '';
                         });
 
-                        // وضع التعديل
                         isEditingMode = true;
                         document.getElementById('saveGradeBtn').textContent = 'تحديث نتيجة الطالب';
                         document.getElementById('cancelEditBtn').classList.remove('hidden');
                         document.getElementById('formTitle').textContent = `تعديل نتيجة الطالب: (${student.studentName})`;
 
-                        // الانتقال للنموذج أعلى الصفحة
                         document.getElementById('addGradeForm').scrollIntoView({ behavior: 'smooth' });
                     }
                 } catch (err) {
                     console.error("خطأ التعديل:", err);
-                    alert("حدث خطأ أثناء تحميل البيانات للتعديل!");
+                    await showCustomAlert("خطأ", "حدث خطأ أثناء تحميل البيانات للتعديل!", "error");
                 }
             });
         });
@@ -483,7 +563,8 @@ async function loadTeacherGrades() {
         document.querySelectorAll('.delete-btn').forEach(btn => {
             btn.addEventListener('click', async function() {
                 const id = this.getAttribute('data-id');
-                if (confirm(`هل أنت تأكد من حذف سجل الطالب رقم الجلوس: (${id})؟`)) {
+                const confirmed = await showCustomConfirm("تأكيد الحذف", `هل أنت متأكد من حذف سجل الطالب برقم الجلوس: (${id})؟`);
+                if (confirmed) {
                     await deleteDoc(doc(db, "grades", id));
                     loadTeacherGrades();
                 }
