@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>نظام نتائج الطلاب</title>
-    <!-- ربط ملف CSS -->
+    <!-- ربط ملف CSS المحسن -->
     <link rel="stylesheet" href="./style.css">
 </head>
 <body>
@@ -135,7 +135,7 @@
 
             <div style="display: flex; gap: 10px; margin-top: 10px;">
                 <button type="submit" id="saveGradeBtn" class="btn btn-primary" style="flex: 1;">حفظ نتيجة الطالب</button>
-                <button type="button" id="cancelEditBtn" class="btn btn-secondary hidden" style="background-color: #6c757d; color: white;">إلغاء التعديل</button>
+                <button type="button" id="cancelEditBtn" class="btn btn-secondary hidden">إلغاء التعديل</button>
             </div>
         </form>
 
@@ -162,6 +162,19 @@
         </div>
     </div>
 
+</div>
+
+<!-- النافذة المنبثقة الاحترافية (Custom Modal Container) -->
+<div id="customModal" class="modal-overlay">
+    <div class="modal-box">
+        <div id="modalIcon" class="modal-icon">✨</div>
+        <h3 id="modalTitle" class="modal-title">تنبيه</h3>
+        <p id="modalMessage" class="modal-message">رسالة التنبيه...</p>
+        <div class="modal-actions">
+            <button id="modalConfirmBtn" class="btn btn-primary" style="min-width: 100px;">موافق</button>
+            <button id="modalCancelBtn" class="btn modal-btn-secondary hidden" style="min-width: 100px;">إلغاء</button>
+        </div>
+    </div>
 </div>
 
 <!-- ربط السكريبت الرئيسي -->
