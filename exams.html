@@ -3,12 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام نتائج الطلاب</title>
+    <title>مدرسة الكداريك الابتدائية المشتركة - نظام النتائج</title>
+    <!-- خط Tajawal -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./style.css">
 </head>
 <body>
 
 <div class="container">
+
+    <!-- قسم الشعار (اللوجو) والعنوان الرئيسي للمدرسة -->
+    <div class="card-header" style="text-align: center; margin-bottom: 25px;">
+        <div class="logo-container" style="max-width: 130px; margin: 0 auto 12px auto;">
+            <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#1e3c72" />
+                        <stop offset="100%" stop-color="#2a5298" />
+                    </linearGradient>
+                    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#fbbf24" />
+                        <stop offset="100%" stop-color="#d97706" />
+                    </linearGradient>
+                </defs>
+                <circle cx="100" cy="100" r="92" fill="url(#bgGrad)" stroke="#f59e0b" stroke-width="4"/>
+                <circle cx="100" cy="100" r="84" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="5 3" opacity="0.6"/>
+                <path d="M100 32 L100 22 M65 42 L58 35 M135 42 L142 35 M40 68 L30 63 M160 68 L170 63" stroke="#fbbf24" stroke-width="3" stroke-linecap="round"/>
+                <path d="M50 125 C 75 115, 95 120, 100 128 C 105 120, 125 115, 150 125 L 150 152 C 125 142, 105 146, 100 154 C 95 146, 75 142, 50 152 Z" fill="#ffffff"/>
+                <path d="M100 128 L100 154" stroke="#1e3c72" stroke-width="2.5"/>
+                <path d="M100 68 L135 84 L100 100 L65 84 Z" fill="url(#goldGrad)"/>
+                <path d="M82 92 L82 106 C 82 112, 118 112, 118 106 L118 92" fill="none" stroke="url(#goldGrad)" stroke-width="2.5"/>
+                <path d="M135 84 L135 106" stroke="#fbbf24" stroke-width="2"/>
+                <circle cx="135" cy="108" r="2.5" fill="#fbbf24"/>
+                <path d="M38 110 Q 32 140 55 160" fill="none" stroke="#fbbf24" stroke-width="2.5" stroke-linecap="round"/>
+                <path d="M162 110 Q 168 140 145 160" fill="none" stroke="#fbbf24" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>
+        </div>
+        <h1 class="school-name" style="font-size: 1.6rem; font-weight: 800; margin-bottom: 5px;">مدرسة الكداريك الابتدائية المشتركة</h1>
+        <span class="school-badge" style="font-size: 0.95rem; opacity: 0.85;">صرح تعليمي تربوي شامل</span>
+    </div>
 
     <!-- الشريط الأعلى (التبويبات + زر الوضع الليلي) -->
     <div class="top-header">
