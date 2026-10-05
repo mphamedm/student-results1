@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>نظام نتائج الطلاب</title>
-    <!-- ربط ملف CSS المحسن -->
+    <!-- ربط ملف CSS -->
     <link rel="stylesheet" href="./style.css">
 </head>
 <body>
@@ -20,15 +20,15 @@
         <button id="themeToggleBtn" class="theme-toggle-btn" title="تبديل الوضع">🌙</button>
     </div>
 
-    <!-- واجهة الطالب -->
+    <!-- واجهة الطالب (استعلام برقم الجلوس فقط) -->
     <div id="studentView" class="card">
         <h2>استعلام عن نتيجة الطالب</h2>
         <form id="studentSearchForm">
             <div class="form-group">
                 <label>رقم الجلوس</label>
-                <input type="text" id="searchSeatNumber" class="form-control" placeholder="أدخل رقم الجلوس" required>
+                <input type="text" id="searchSeatNumber" class="form-control" placeholder="أدخل رقم الجلوس فقط" required>
             </div>
-            <button type="submit" class="btn btn-primary" style="width: 100%;">بحث عن النتيجة</button>
+            <button type="submit" class="btn btn-primary" style="width: 100%;">عرض النتيجة</button>
         </form>
 
         <div id="studentResultBox" class="hidden"></div>
@@ -100,12 +100,12 @@
             <h4>رصد درجات طالب جديد</h4>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px;">
                 <div class="form-group" style="margin-bottom:0;">
-                    <label>رقم الجلوس</label>
-                    <input type="text" id="seatNumber" class="form-control" required placeholder="رقم الجلوس">
+                    <label>اسم الطالب الكامل</label>
+                    <input type="text" id="studentName" class="form-control" required placeholder="أدخل اسم الطالب الكامل">
                 </div>
                 <div class="form-group" style="margin-bottom:0;">
-                    <label>اسم الطالب الكامل</label>
-                    <input type="text" id="studentName" class="form-control" required placeholder="اسم الطالب">
+                    <label>رقم الجلوس</label>
+                    <input type="text" id="seatNumber" class="form-control" required placeholder="أدخل رقم الجلوس">
                 </div>
             </div>
 
@@ -143,8 +143,8 @@
             <table>
                 <thead>
                     <tr>
-                        <th>رقم الجلوس</th>
                         <th>اسم الطالب</th>
+                        <th>رقم الجلوس</th>
                         <th>تفاصيل درجات المواد</th>
                         <th>المجموع الكلي</th>
                         <th>التقدير العام</th>
