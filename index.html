@@ -3,219 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام نتائج الطلاب</title>
-    <!-- ربط ملف CSS المحسن -->
-    <link rel="stylesheet" href="./style.css">
+    <title>نظام إدارة نتائج الطلاب</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-<body>
-
-<div class="container">
-
-    <!-- الشريط الأعلى (التبويبات + زر الوضع الليلي) -->
-    <div class="top-header">
-        <div class="header-tabs">
-            <button id="btnStudentTab" class="tab-btn active">استعلام الطالب</button>
-            <button id="btnTeacherTab" class="tab-btn">بوابة المعلم</button>
-        </div>
-        <button id="themeToggleBtn" class="theme-toggle-btn" title="تبديل الوضع">🌙</button>
-    </div>
-
-    <!-- واجهة الطالب (استعلام برقم الجلوس فقط) -->
-    <div id="studentView" class="card">
-        <h2>استعلام عن نتيجة الطالب</h2>
-        <form id="studentSearchForm">
-            <div class="form-group">
-                <label>رقم الجلوس</label>
-                <input type="text" id="searchSeatNumber" class="form-control" placeholder="أدخل رقم الجلوس فقط" required>
+<body class="dark-mode">
+    <div class="container">
+        <!-- الشريط العلوي -->
+        <header class="top-header">
+            <div class="header-tabs">
+                <button class="tab-btn active">لوحة النتائج</button>
             </div>
-            <button type="submit" class="btn btn-primary" style="width: 100%;">عرض النتيجة</button>
-        </form>
+            <button class="theme-toggle-btn" id="themeToggleBtn" title="تبديل الوضع">🌙</button>
+        </header>
 
-        <div id="studentResultBox" class="hidden"></div>
-    </div>
-
-    <!-- واجهة تسجيل دخول/إنشاء حساب المعلم -->
-    <div id="teacherAuthView" class="card hidden">
-        
-        <!-- تسجيل الدخول -->
-        <div id="loginFormContainer">
-            <h2>تسجيل دخول المعلم</h2>
-            <form id="loginForm">
-                <div class="form-group">
-                    <label>البريد الإلكتروني</label>
-                    <input type="email" id="email" class="form-control" required placeholder="example@mail.com">
-                </div>
-                <div class="form-group">
-                    <label>كلمة المرور</label>
-                    <input type="password" id="password" class="form-control" required placeholder="******">
-                </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">دخول</button>
-                <div id="loginError" class="error-msg hidden"></div>
-            </form>
-            <p style="margin-top: 18px; text-align: center; font-size: 14px; color: var(--text-muted);">
-                ليس لديك حساب؟ <a href="#" id="toRegisterBtn" style="color: var(--primary); font-weight: 600;">إنشاء حساب جديد</a>
-            </p>
-        </div>
-
-        <!-- إنشاء حساب -->
-        <div id="registerFormContainer" class="hidden">
-            <h2>تسجيل معلم جديد</h2>
-            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 18px;">يتطلب كود اعتماد فريد مسبق من إدارة المدرسة</p>
-            <form id="registerForm">
-                <div class="form-group">
-                    <label>الاسم الكامل</label>
-                    <input type="text" id="regFullName" class="form-control" required placeholder="أدخل اسمك الثلاثي">
-                </div>
-                <div class="form-group">
-                    <label>كود اعتماد المعلم الفريد</label>
-                    <input type="text" id="regTeacherCode" class="form-control" required placeholder="مثال: TCH-1001">
-                </div>
-                <div class="form-group">
-                    <label>البريد الإلكتروني</label>
-                    <input type="email" id="regEmail" class="form-control" required placeholder="example@mail.com">
-                </div>
-                <div class="form-group">
-                    <label>كلمة المرور (6 أحرف على الأقل)</label>
-                    <input type="password" id="regPassword" class="form-control" required minlength="6" placeholder="******">
-                </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">إنشاء حساب معلم معتمد</button>
-                <div id="registerError" class="error-msg hidden"></div>
-            </form>
-            <p style="margin-top: 18px; text-align: center; font-size: 14px; color: var(--text-muted);">
-                لديك حساب بالفعل؟ <a href="#" id="toLoginBtn" style="color: var(--primary); font-weight: 600;">تسجيل الدخول</a>
-            </p>
-        </div>
-
-    </div>
-
-    <!-- لوحة تحكم المعلم -->
-    <div id="teacherDashboardView" class="card hidden">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h3 id="welcomeTeacherText">مرحباً بك، معلم</h3>
-            <button id="logoutBtn" class="btn btn-danger" style="padding: 8px 16px; font-size: 13px;">تسجيل الخروج</button>
-        </div>
-
-        <!-- نموذج إدخال وتعديل طالب -->
-        <form id="addGradeForm">
-            <h4 id="formTitle">رصد درجات طالب جديد</h4>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px;">
-                <div class="form-group" style="margin-bottom:0;">
-                    <label>اسم الطالب الكامل</label>
-                    <input type="text" id="studentName" class="form-control" required placeholder="أدخل اسم الطالب الكامل">
-                </div>
-                <div class="form-group" style="margin-bottom:0;">
-                    <label>رقم الجلوس</label>
-                    <input type="text" id="seatNumber" class="form-control" required placeholder="أدخل رقم الجلوس">
-                </div>
-            </div>
-
-            <label>درجات المواد الدراسية (أدخل الدرجات للمواد المطلوب رصدها):</label>
-            <div class="subjects-grid">
-                <div class="form-group">
-                    <label>اللغة العربية</label>
-                    <input type="number" min="0" max="100" class="form-control subject-input" data-subject="اللغة العربية" placeholder="من 100">
-                </div>
-                <div class="form-group">
-                    <label>اللغة الإنجليزية</label>
-                    <input type="number" min="0" max="100" class="form-control subject-input" data-subject="اللغة الإنجليزية" placeholder="من 100">
-                </div>
-                <div class="form-group">
-                    <label>الرياضيات</label>
-                    <input type="number" min="0" max="100" class="form-control subject-input" data-subject="الرياضيات" placeholder="من 100">
-                </div>
-                <div class="form-group">
-                    <label>العلوم</label>
-                    <input type="number" min="0" max="100" class="form-control subject-input" data-subject="العلوم" placeholder="من 100">
-                </div>
-                <div class="form-group">
-                    <label>الدراسات الاجتماعية</label>
-                    <input type="number" min="0" max="100" class="form-control subject-input" data-subject="الدراسات الاجتماعية" placeholder="من 100">
-                </div>
-            </div>
-
-            <div style="display: flex; gap: 10px; margin-top: 10px;">
-                <button type="submit" id="saveGradeBtn" class="btn btn-primary" style="flex: 1;">حفظ نتيجة الطالب</button>
-                <button type="button" id="cancelEditBtn" class="btn btn-secondary hidden">إلغاء التعديل</button>
-            </div>
-        </form>
-
-        <hr style="margin: 25px 0; border: none; border-top: 1px solid var(--border);">
-
-        <!-- قسم تنظيم النتائج والإحصائيات -->
-        <div class="dashboard-section-header">
-            <h4>النتائج المضافة بواسطة المعلم</h4>
-        </div>
-
-        <!-- بطاقات ملخص الإحصائيات -->
+        <!-- كروت الإحصائيات -->
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-label">إجمالي الطلاب</div>
-                <div id="statTotalStudents" class="stat-value">0</div>
+                <div class="stat-value" id="totalStudentsCount">0</div>
             </div>
             <div class="stat-card stat-success">
                 <div class="stat-label">الطلاب الناجحون</div>
-                <div id="statPassedStudents" class="stat-value">0</div>
+                <div class="stat-value" id="passedStudentsCount">0</div>
             </div>
             <div class="stat-card stat-danger">
                 <div class="stat-label">الطلاب الراسبون</div>
-                <div id="statFailedStudents" class="stat-value">0</div>
+                <div class="stat-value" id="failedStudentsCount">0</div>
             </div>
             <div class="stat-card stat-info">
                 <div class="stat-label">نسبة النجاح</div>
-                <div id="statPassRate" class="stat-value">0%</div>
+                <div class="stat-value" id="passRatePercentage">0%</div>
             </div>
         </div>
 
-        <!-- شريط البحث والفلترة -->
-        <div class="table-toolbar">
-            <div class="search-box">
-                <input type="text" id="searchTeacherTable" class="form-control" placeholder="🔍 ابحث باسم الطالب أو رقم الجلوس...">
-            </div>
-            <div class="filter-box">
-                <select id="filterStatus" class="form-control">
+        <!-- جدول النتائج وفلترة البحث -->
+        <div class="card">
+            <div class="table-toolbar">
+                <input type="text" id="searchTeacherTable" class="form-control search-box" placeholder="ابحث باسم الطالب أو رقم الجلوس...">
+                <select id="filterStatus" class="form-control filter-box">
                     <option value="all">جميع الحالات</option>
                     <option value="nafs">الناجحون فقط</option>
                     <option value="rasb">الراسبون فقط</option>
                 </select>
             </div>
-        </div>
 
-        <!-- جدول نتائج الطلاب المنسق -->
-        <div class="table-responsive">
-            <table class="styled-table">
-                <thead>
-                    <tr>
-                        <th>بيانات الطالب</th>
-                        <th>تفاصيل درجات المواد</th>
-                        <th>المجموع الكلي</th>
-                        <th>التقدير العام</th>
-                        <th>الحالة</th>
-                        <th style="text-align: center;">إجراءات</th>
-                    </tr>
-                </thead>
-                <tbody id="teacherTableBody">
-                    <tr><td colspan="6" style="text-align:center;">جاري تحميل البيانات...</td></tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-</div>
-
-<!-- النافذة المنبثقة الاحترافية (Custom Modal Container) -->
-<div id="customModal" class="modal-overlay">
-    <div class="modal-box">
-        <div id="modalIcon" class="modal-icon">✨</div>
-        <h3 id="modalTitle" class="modal-title">تنبيه</h3>
-        <p id="modalMessage" class="modal-message">رسالة التنبيه...</p>
-        <div class="modal-actions">
-            <button id="modalConfirmBtn" class="btn btn-primary" style="min-width: 100px;">موافق</button>
-            <button id="modalCancelBtn" class="btn modal-btn-secondary hidden" style="min-width: 100px;">إلغاء</button>
+            <div class="table-responsive">
+                <table class="styled-table">
+                    <thead>
+                        <tr>
+                            <th>اسم الطالب / رقم الجلوس</th>
+                            <th>درجات المواد</th>
+                            <th>المجموع الكلي</th>
+                            <th>التقدير العام</th>
+                            <th>الحالة</th>
+                            <th>إجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="teacherTableBody">
+                        <!-- يتم استدعاء البيانات ديناميكياً بواسطة JavaScript -->
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
-</div>
 
-<!-- ربط السكريبت الرئيسي -->
-<script type="module" src="./script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
