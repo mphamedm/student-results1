@@ -1,221 +1,119 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام نتائج الطلاب</title>
-    <!-- ربط ملف CSS المحسن -->
-    <link rel="stylesheet" href="./style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>مدرسة الكداريك الابتدائية المشتركة</title>
+  <!-- خط Tajawal -->
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <!-- ربط ملفات التنسيق -->
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="index.css">
 </head>
 <body>
 
-<div class="container">
+  <div class="school-card">
+    
+    <!-- زر التبديل بين الوضع الليلي والنهاري -->
+    <button class="theme-toggle-btn" id="themeToggle" aria-label="تبديل الوضع الليلي">
+      <svg id="sunIcon" style="display: none;" viewBox="0 0 24 24">
+        <path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0s-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0s-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41s-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06c.39-.39.39-1.03 0-1.41s-1.03-.39-1.41 0z"/>
+      </svg>
+      <svg id="moonIcon" viewBox="0 0 24 24">
+        <path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4C12.92 3.04 12.46 3 12 3z"/>
+      </svg>
+    </button>
 
-    <!-- الشريط الأعلى (التبويبات + زر الوضع الليلي) -->
-    <div class="top-header">
-        <div class="header-tabs">
-            <button id="btnStudentTab" class="tab-btn active">استعلام الطالب</button>
-            <button id="btnTeacherTab" class="tab-btn">بوابة المعلم</button>
-        </div>
-        <button id="themeToggleBtn" class="theme-toggle-btn" title="تبديل الوضع">🌙</button>
+    <div class="card-header">
+      <div class="logo-container">
+        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#1e3c72" />
+              <stop offset="100%" stop-color="#2a5298" />
+            </linearGradient>
+            <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#fbbf24" />
+              <stop offset="100%" stop-color="#d97706" />
+            </linearGradient>
+          </defs>
+          <circle cx="100" cy="100" r="92" fill="url(#bgGrad)" stroke="#f59e0b" stroke-width="4"/>
+          <circle cx="100" cy="100" r="84" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="5 3" opacity="0.6"/>
+          <path d="M100 32 L100 22 M65 42 L58 35 M135 42 L142 35 M40 68 L30 63 M160 68 L170 63" stroke="#fbbf24" stroke-width="3" stroke-linecap="round"/>
+          <path d="M50 125 C 75 115, 95 120, 100 128 C 105 120, 125 115, 150 125 L 150 152 C 125 142, 105 146, 100 154 C 95 146, 75 142, 50 152 Z" fill="#ffffff"/>
+          <path d="M100 128 L100 154" stroke="#1e3c72" stroke-width="2.5"/>
+          <path d="M100 68 L135 84 L100 100 L65 84 Z" fill="url(#goldGrad)"/>
+          <path d="M82 92 L82 106 C 82 112, 118 112, 118 106 L118 92" fill="none" stroke="url(#goldGrad)" stroke-width="2.5"/>
+          <path d="M135 84 L135 106" stroke="#fbbf24" stroke-width="2"/>
+          <circle cx="135" cy="108" r="2.5" fill="#fbbf24"/>
+          <path d="M38 110 Q 32 140 55 160" fill="none" stroke="#fbbf24" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M162 110 Q 168 140 145 160" fill="none" stroke="#fbbf24" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+      </div>
     </div>
 
-    <!-- واجهة الطالب (استعلام برقم الجلوس فقط) -->
-    <div id="studentView" class="card">
-        <h2>استعلام عن نتيجة الطالب</h2>
-        <form id="studentSearchForm">
-            <div class="form-group">
-                <label>رقم الجلوس</label>
-                <input type="text" id="searchSeatNumber" class="form-control" placeholder="أدخل رقم الجلوس فقط" required>
-            </div>
-            <button type="submit" class="btn btn-primary" style="width: 100%;">عرض النتيجة</button>
-        </form>
+    <div class="card-body">
+      <h1 class="school-name">مدرسة الكداريك الابتدائية المشتركة</h1>
+      <span class="school-badge">صرح تعليمي تربوي شامل</span>
+      
+      <div class="divider"></div>
 
-        <div id="studentResultBox" class="hidden"></div>
+      <div class="about-section">
+        تُعد <strong>مدرسة الكداريك الابتدائية المشتركة</strong> بيئة تعليمية متكاملة تهدف إلى التنشئة الصحيحة وتأسيس أجيال غدٍ واعدة للبنين والبنات. نلتزم بتقديم تعليم ذي جودة عالية يجمع بين التفوق الأكاديمي، وبناء الشخصية المبدعة، وغرس القيم الأخلاقية الحميدة.
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-item"><span>📖</span> تعليم متميز</div>
+        <div class="feature-item"><span>🌱</span> تربية وقيم</div>
+        <div class="feature-item"><span>🤝</span> بيئة تفاعلية</div>
+      </div>
+
+      <div class="cta-container">
+        <button class="btn-results" type="button" onclick="window.location.href='exams.html';">
+          <svg viewBox="0 0 24 24">
+            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+          </svg>
+          الاستعلام عن نتيجة الامتحانات
+        </button>
+      </div>
     </div>
 
-    <!-- واجهة تسجيل دخول/إنشاء حساب المعلم -->
-    <div id="teacherAuthView" class="card hidden">
-        
-        <!-- تسجيل الدخول -->
-        <div id="loginFormContainer">
-            <h2>تسجيل دخول المعلم</h2>
-            <form id="loginForm">
-                <div class="form-group">
-                    <label>البريد الإلكتروني</label>
-                    <input type="email" id="email" class="form-control" required placeholder="example@mail.com">
-                </div>
-                <div class="form-group">
-                    <label>كلمة المرور</label>
-                    <input type="password" id="password" class="form-control" required placeholder="******">
-                </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">دخول</button>
-                <div id="loginError" class="error-msg hidden"></div>
-            </form>
-            <p style="margin-top: 18px; text-align: center; font-size: 14px; color: var(--text-muted);">
-                ليس لديك حساب؟ <a href="#" id="toRegisterBtn" style="color: var(--primary); font-weight: 600;">إنشاء حساب جديد</a>
-            </p>
-        </div>
+  </div>
 
-        <!-- إنشاء حساب -->
-        <div id="registerFormContainer" class="hidden">
-            <h2>تسجيل معلم جديد</h2>
-            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 18px;">يتطلب كود اعتماد فريد مسبق من إدارة المدرسة</p>
-            <form id="registerForm">
-                <div class="form-group">
-                    <label>الاسم الكامل</label>
-                    <input type="text" id="regFullName" class="form-control" required placeholder="أدخل اسمك الثلاثي">
-                </div>
-                <div class="form-group">
-                    <label>كود اعتماد المعلم الفريد</label>
-                    <input type="text" id="regTeacherCode" class="form-control" required placeholder="مثال: TCH-1001">
-                </div>
-                <div class="form-group">
-                    <label>البريد الإلكتروني</label>
-                    <input type="email" id="regEmail" class="form-control" required placeholder="example@mail.com">
-                </div>
-                <div class="form-group">
-                    <label>كلمة المرور (6 أحرف على الأقل)</label>
-                    <input type="password" id="regPassword" class="form-control" required minlength="6" placeholder="******">
-                </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">إنشاء حساب معلم معتمد</button>
-                <div id="registerError" class="error-msg hidden"></div>
-            </form>
-            <p style="margin-top: 18px; text-align: center; font-size: 14px; color: var(--text-muted);">
-                لديك حساب بالفعل؟ <a href="#" id="toLoginBtn" style="color: var(--primary); font-weight: 600;">تسجيل الدخول</a>
-            </p>
-        </div>
+  <script>
+    // إدارة الوضع الليلي
+    document.addEventListener('DOMContentLoaded', () => {
+      const themeToggleBtn = document.getElementById('themeToggle');
+      const sunIcon = document.getElementById('sunIcon');
+      const moonIcon = document.getElementById('moonIcon');
 
-    </div>
+      const currentTheme = localStorage.getItem('theme');
+      if (currentTheme) {
+        document.documentElement.setAttribute('data-theme', currentTheme);
+        if (currentTheme === 'dark') {
+          if (sunIcon) sunIcon.style.display = 'block';
+          if (moonIcon) moonIcon.style.display = 'none';
+        }
+      }
 
-    <!-- لوحة تحكم المعلم -->
-    <div id="teacherDashboardView" class="card hidden">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h3 id="welcomeTeacherText">مرحباً بك، معلم</h3>
-            <button id="logoutBtn" class="btn btn-danger" style="padding: 8px 16px; font-size: 13px;">تسجيل الخروج</button>
-        </div>
+      if (themeToggleBtn) {
+        themeToggleBtn.addEventListener('click', () => {
+          let theme = document.documentElement.getAttribute('data-theme');
+          if (theme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'light');
+            localStorage.setItem('theme', 'light');
+            if (sunIcon) sunIcon.style.display = 'none';
+            if (moonIcon) moonIcon.style.display = 'block';
+          } else {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            localStorage.setItem('theme', 'dark');
+            if (sunIcon) sunIcon.style.display = 'block';
+            if (moonIcon) moonIcon.style.display = 'none';
+          }
+        });
+      }
+    });
+  </script>
 
-        <!-- نموذج إدخال وتعديل طالب -->
-        <form id="addGradeForm">
-            <h4 id="formTitle">رصد درجات طالب جديد</h4>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px;">
-                <div class="form-group" style="margin-bottom:0;">
-                    <label>اسم الطالب الكامل</label>
-                    <input type="text" id="studentName" class="form-control" required placeholder="أدخل اسم الطالب الكامل">
-                </div>
-                <div class="form-group" style="margin-bottom:0;">
-                    <label>رقم الجلوس</label>
-                    <input type="text" id="seatNumber" class="form-control" required placeholder="أدخل رقم الجلوس">
-                </div>
-            </div>
-
-            <label>درجات المواد الدراسية (أدخل الدرجات للمواد المطلوب رصدها):</label>
-            <div class="subjects-grid">
-                <div class="form-group">
-                    <label>اللغة العربية</label>
-                    <input type="number" min="0" max="100" class="form-control subject-input" data-subject="اللغة العربية" placeholder="من 100">
-                </div>
-                <div class="form-group">
-                    <label>اللغة الإنجليزية</label>
-                    <input type="number" min="0" max="100" class="form-control subject-input" data-subject="اللغة الإنجليزية" placeholder="من 100">
-                </div>
-                <div class="form-group">
-                    <label>الرياضيات</label>
-                    <input type="number" min="0" max="100" class="form-control subject-input" data-subject="الرياضيات" placeholder="من 100">
-                </div>
-                <div class="form-group">
-                    <label>العلوم</label>
-                    <input type="number" min="0" max="100" class="form-control subject-input" data-subject="العلوم" placeholder="من 100">
-                </div>
-                <div class="form-group">
-                    <label>الدراسات الاجتماعية</label>
-                    <input type="number" min="0" max="100" class="form-control subject-input" data-subject="الدراسات الاجتماعية" placeholder="من 100">
-                </div>
-            </div>
-
-            <div style="display: flex; gap: 10px; margin-top: 10px;">
-                <button type="submit" id="saveGradeBtn" class="btn btn-primary" style="flex: 1;">حفظ نتيجة الطالب</button>
-                <button type="button" id="cancelEditBtn" class="btn btn-secondary hidden">إلغاء التعديل</button>
-            </div>
-        </form>
-
-        <hr style="margin: 25px 0; border: none; border-top: 1px solid var(--border);">
-
-        <!-- قسم تنظيم النتائج والإحصائيات -->
-        <div class="dashboard-section-header">
-            <h4>النتائج المضافة بواسطة المعلم</h4>
-        </div>
-
-        <!-- بطاقات ملخص الإحصائيات -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-label">إجمالي الطلاب</div>
-                <div id="statTotalStudents" class="stat-value">0</div>
-            </div>
-            <div class="stat-card stat-success">
-                <div class="stat-label">الطلاب الناجحون</div>
-                <div id="statPassedStudents" class="stat-value">0</div>
-            </div>
-            <div class="stat-card stat-danger">
-                <div class="stat-label">الطلاب الراسبون</div>
-                <div id="statFailedStudents" class="stat-value">0</div>
-            </div>
-            <div class="stat-card stat-info">
-                <div class="stat-label">نسبة النجاح</div>
-                <div id="statPassRate" class="stat-value">0%</div>
-            </div>
-        </div>
-
-        <!-- شريط البحث والفلترة -->
-        <div class="table-toolbar">
-            <div class="search-box">
-                <input type="text" id="searchTeacherTable" class="form-control" placeholder="🔍 ابحث باسم الطالب أو رقم الجلوس...">
-            </div>
-            <div class="filter-box">
-                <select id="filterStatus" class="form-control">
-                    <option value="all">جميع الحالات</option>
-                    <option value="nafs">الناجحون فقط</option>
-                    <option value="rasb">الراسبون فقط</option>
-                </select>
-            </div>
-        </div>
-
-        <!-- جدول نتائج الطلاب المنسق -->
-        <div class="table-responsive">
-            <table class="styled-table">
-                <thead>
-                    <tr>
-                        <th>بيانات الطالب</th>
-                        <th>تفاصيل درجات المواد</th>
-                        <th>المجموع الكلي</th>
-                        <th>التقدير العام</th>
-                        <th>الحالة</th>
-                        <th style="text-align: center;">إجراءات</th>
-                    </tr>
-                </thead>
-                <tbody id="teacherTableBody">
-                    <tr><td colspan="6" style="text-align:center;">جاري تحميل البيانات...</td></tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-</div>
-
-<!-- النافذة المنبثقة الاحترافية (Custom Modal Container) -->
-<div id="customModal" class="modal-overlay">
-    <div class="modal-box">
-        <div id="modalIcon" class="modal-icon">✨</div>
-        <h3 id="modalTitle" class="modal-title">تنبيه</h3>
-        <p id="modalMessage" class="modal-message">رسالة التنبيه...</p>
-        <div class="modal-actions">
-            <button id="modalConfirmBtn" class="btn btn-primary" style="min-width: 100px;">موافق</button>
-            <button id="modalCancelBtn" class="btn modal-btn-secondary hidden" style="min-width: 100px;">إلغاء</button>
-        </div>
-    </div>
-</div>
-
-<!-- ربط السكريبت الرئيسي -->
-<script type="module" src="./script.js"></script>
 </body>
 </html>
