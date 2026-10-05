@@ -141,22 +141,60 @@
 
         <hr style="margin: 25px 0; border: none; border-top: 1px solid var(--border);">
 
-        <h4>النتائج المضافة بواسطة المعلم</h4>
+        <!-- قسم تنظيم النتائج والإحصائيات -->
+        <div class="dashboard-section-header">
+            <h4>النتائج المضافة بواسطة المعلم</h4>
+        </div>
+
+        <!-- بطاقات ملخص الإحصائيات -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">إجمالي الطلاب</div>
+                <div id="statTotalStudents" class="stat-value">0</div>
+            </div>
+            <div class="stat-card stat-success">
+                <div class="stat-label">الطلاب الناجحون</div>
+                <div id="statPassedStudents" class="stat-value">0</div>
+            </div>
+            <div class="stat-card stat-danger">
+                <div class="stat-label">الطلاب الراسبون</div>
+                <div id="statFailedStudents" class="stat-value">0</div>
+            </div>
+            <div class="stat-card stat-info">
+                <div class="stat-label">نسبة النجاح</div>
+                <div id="statPassRate" class="stat-value">0%</div>
+            </div>
+        </div>
+
+        <!-- شريط البحث والفلترة -->
+        <div class="table-toolbar">
+            <div class="search-box">
+                <input type="text" id="searchTeacherTable" class="form-control" placeholder="🔍 ابحث باسم الطالب أو رقم الجلوس...">
+            </div>
+            <div class="filter-box">
+                <select id="filterStatus" class="form-control">
+                    <option value="all">جميع الحالات</option>
+                    <option value="nafs">الناجحون فقط</option>
+                    <option value="rasb">الراسبون فقط</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- جدول نتائج الطلاب المنسق -->
         <div class="table-responsive">
-            <table>
+            <table class="styled-table">
                 <thead>
                     <tr>
-                        <th>اسم الطالب</th>
-                        <th>رقم الجلوس</th>
+                        <th>بيانات الطالب</th>
                         <th>تفاصيل درجات المواد</th>
                         <th>المجموع الكلي</th>
                         <th>التقدير العام</th>
                         <th>الحالة</th>
-                        <th>إجراءات</th>
+                        <th style="text-align: center;">إجراءات</th>
                     </tr>
                 </thead>
                 <tbody id="teacherTableBody">
-                    <tr><td colspan="7" style="text-align:center;">جاري تحميل البيانات...</td></tr>
+                    <tr><td colspan="6" style="text-align:center;">جاري تحميل البيانات...</td></tr>
                 </tbody>
             </table>
         </div>
