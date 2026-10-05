@@ -1,1 +1,241 @@
+:root {
+  /* Dynamic Light Theme Variables */
+  --bg-gradient: linear-gradient(135deg, #f6f9fc 0%, #eef2f5 100%);
+  --card-bg: #ffffff;
+  --card-border: rgba(255, 255, 255, 0.8);
+  --primary-color: #1e3c72;
+  --secondary-color: #2a5298;
+  --accent-color: #f59e0b;
+  --text-dark: #1f2937;
+  --text-muted: #4b5563;
+  --about-bg: #f8fafc;
+  --feature-bg: #ffffff;
+  --feature-border: #e5e7eb;
+  --shadow-color: rgba(0, 0, 0, 0.08);
+  --shadow-hover: rgba(0, 0, 0, 0.12);
+  
+  --success-color: #10b981;
+  --success-hover: #059669;
+}
+
+/* Dark Theme Override */
+[data-theme="dark"] {
+  --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  --card-bg: #1e293b;
+  --card-border: rgba(255, 255, 255, 0.05);
+  --primary-color: #60a5fa;
+  --secondary-color: #3b82f6;
+  --text-dark: #f3f4f6;
+  --text-muted: #cbd5e1;
+  --about-bg: #0f172a;
+  --feature-bg: #1e293b;
+  --feature-border: #334155;
+  --shadow-color: rgba(0, 0, 0, 0.4);
+  --shadow-hover: rgba(0, 0, 0, 0.6);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+body {
+  font-family: 'Tajawal', sans-serif;
+  background: var(--bg-gradient);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.school-card {
+  background: var(--card-bg);
+  border-radius: 20px;
+  box-shadow: 0 15px 35px var(--shadow-color);
+  max-width: 650px;
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid var(--card-border);
+  position: relative;
+}
+
+.school-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px var(--shadow-hover);
+}
+
+/* Dark Mode Toggle Button */
+.theme-toggle-btn {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #ffffff;
+  z-index: 10;
+  transition: all 0.3s ease;
+}
+
+.theme-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.35);
+  transform: scale(1.08);
+}
+
+.theme-toggle-btn svg {
+  width: 22px;
+  height: 22px;
+  fill: currentColor;
+}
+
+.card-header {
+  background: linear-gradient(135deg, #1e3c72, #2a5298);
+  padding: 40px 20px;
+  text-align: center;
+  position: relative;
+}
+
+.logo-container {
+  background: #ffffff;
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  border: 4px solid #ffffff;
+}
+
+.logo-container svg {
+  width: 110px;
+  height: 110px;
+}
+
+.card-body {
+  padding: 35px 30px;
+  text-align: center;
+}
+
+.school-name {
+  color: var(--primary-color);
+  font-size: 1.8rem;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.school-badge {
+  display: inline-block;
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+  padding: 6px 16px;
+  border-radius: 50px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin-bottom: 24px;
+}
+
+.divider {
+  height: 2px;
+  background: linear-gradient(to left, transparent, var(--accent-color), transparent);
+  margin: 0 auto 24px auto;
+  width: 60%;
+}
+
+.about-section {
+  text-align: justify;
+  color: var(--text-muted);
+  line-height: 1.8;
+  font-size: 1.05rem;
+  background: var(--about-bg);
+  padding: 20px;
+  border-radius: 12px;
+  border-right: 4px solid var(--primary-color);
+  margin-bottom: 25px;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.feature-item {
+  background: var(--feature-bg);
+  border: 1px solid var(--feature-border);
+  padding: 12px 10px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.cta-container {
+  margin-top: 10px;
+}
+
+.btn-results {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 16px 24px;
+  background: linear-gradient(135deg, var(--success-color), var(--success-hover));
+  color: #ffffff;
+  font-family: 'Tajawal', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(16, 185, 129, 0.35);
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.btn-results:hover {
+  background: linear-gradient(135deg, var(--success-hover), #047857);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.45);
+}
+
+.btn-results:active {
+  transform: translateY(0);
+}
+
+.btn-results svg {
+  width: 24px;
+  height: 24px;
+  fill: currentColor;
+}
+
+@media (max-width: 480px) {
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+  .school-name {
+    font-size: 1.4rem;
+  }
+  .btn-results {
+    font-size: 1rem;
+    padding: 14px 20px;
+  }
+}
 
