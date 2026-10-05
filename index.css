@@ -105,22 +105,22 @@ body {
   position: relative;
 }
 
+/* تم إزالة الخلفية والإطار والظل من الشعار */
 .logo-container {
-  background: #ffffff;
+  background: transparent;
   width: 140px;
   height: 140px;
-  border-radius: 50%;
   margin: 0 auto;
   display: flex;
   justify-content: center;
   align-items: center;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-  border: 4px solid #ffffff;
+  border: none;
+  box-shadow: none;
 }
 
 .logo-container svg {
-  width: 110px;
-  height: 110px;
+  width: 130px;
+  height: 130px;
 }
 
 .card-body {
@@ -238,4 +238,3 @@ body {
     padding: 14px 20px;
   }
 }
-
