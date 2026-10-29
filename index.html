@@ -17,7 +17,7 @@
       gap: 12px;
       margin-top: 20px;
     }
-    .btn-results, .btn-honor {
+    .btn-results, .btn-honor, .btn-library {
       display: flex;
       align-items: center;
       justify-content: center;
@@ -45,7 +45,15 @@
     .btn-honor:hover {
       opacity: 0.9;
     }
-    .btn-results svg, .btn-honor svg {
+    /* تنسيق زر المكتبة الذكية */
+    .btn-library {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: #fff;
+    }
+    .btn-library:hover {
+      opacity: 0.9;
+    }
+    .btn-results svg, .btn-honor svg, .btn-library svg {
       width: 20px;
       height: 20px;
       fill: currentColor;
@@ -111,7 +119,7 @@
       </div>
 
       <div class="cta-container">
-        <!-- زر لوحة الشرف وأوائل الطلبة الجديد -->
+        <!-- زر لوحة الشرف وأوائل الطلبة -->
         <button class="btn-honor" type="button" onclick="window.location.href='top-students.html';">
           <svg viewBox="0 0 24 24">
             <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
@@ -119,6 +127,15 @@
           لوحة الشرف وأوائل الطلبة 🏆
         </button>
 
+        <!-- زر المكتبة الذكية الجديد -->
+        <button class="btn-library" type="button" onclick="window.location.href='library.html';">
+          <svg viewBox="0 0 24 24">
+            <path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z"/>
+          </svg>
+          المكتبة الذكية 📚
+        </button>
+
+        <!-- زر الاستعلام عن النتيجة -->
         <button class="btn-results" type="button" onclick="window.location.href='exams.html';">
           <svg viewBox="0 0 24 24">
             <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
