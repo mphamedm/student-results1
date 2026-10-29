@@ -1,0 +1,26 @@
+{
+  "id": "/",
+  "name": "مكتبتي لملفات PDF الذكية",
+  "short_name": "مكتبتي",
+  "description": "تطبيق لإدارة وعرض ملفات PDF والتحكم بها بسهولة",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0d1222",
+  "theme_color": "#6558f5",
+  "lang": "ar",
+  "dir": "rtl",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3379/3379846.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3379/3379846.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
